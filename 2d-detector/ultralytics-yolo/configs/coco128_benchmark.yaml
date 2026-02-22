@@ -1,0 +1,20 @@
+dataset: coco128.yaml
+imgsz: 640
+epochs: 50
+batch: 16
+device: 0
+seed: 42
+eval_split: val
+rect: false
+half: false
+dnn: false
+workers: 8
+benchmark_fixed_input: true
+benchmark_warmup: 20
+benchmark_iters: 200
+project: runs/benchmarks
+name: agri-human-detection
+models:
+  - yolov8s.pt
+  - yolo11s.pt
+notes: "Baseline benchmark settings for YOLOv8 vs YOLOv11"

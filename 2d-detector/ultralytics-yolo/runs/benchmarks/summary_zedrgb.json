@@ -1,0 +1,102 @@
+[
+  {
+    "model": "yolov8s.pt",
+    "train_time_sec": 4574.38,
+    "inf_time_per_frame_ms": 1.968,
+    "preprocess_time_per_frame_ms": 0.517,
+    "postprocess_time_per_frame_ms": 0.525,
+    "total_time_per_frame_ms": 3.01,
+    "eval_split": "test",
+    "num_classes": 1,
+    "map50": 0.9903176577638482,
+    "map50_95": 0.8552391753473543,
+    "precision": 0.9903109915149949,
+    "recall": 0.9707602339181286,
+    "f1": 0.9804381577853858,
+    "per_class_ap50_95": {
+      "person": 0.8552391753473543
+    },
+    "per_class_ap50": {
+      "person": 0.9903176577638482
+    },
+    "per_class_precision": {
+      "person": 0.9903109915149949
+    },
+    "per_class_recall": {
+      "person": 0.9707602339181286
+    },
+    "per_class_f1": {
+      "person": 0.9804381577853858
+    },
+    "eval_imgsz": 640,
+    "eval_batch": 16,
+    "eval_rect": false,
+    "eval_half": false,
+    "eval_workers": 8,
+    "eval_device": 0,
+    "eval_dnn": false,
+    "epochs": 50,
+    "imgsz": 640,
+    "batch": 16,
+    "dataset": "/workspace/data/zedrgb-dataset/data.yaml",
+    "config_device": 0,
+    "fixed_input_inference_ms": 5.829,
+    "fixed_input_shape": "640x640",
+    "fixed_input_dtype": "torch.float32",
+    "fixed_input_device": "cuda:0",
+    "fixed_input_iters": 200,
+    "fixed_input_warmup": 20,
+    "train_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolov8s11",
+    "eval_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolov8s/test3"
+  },
+  {
+    "model": "yolo11s.pt",
+    "train_time_sec": 5158.96,
+    "inf_time_per_frame_ms": 1.954,
+    "preprocess_time_per_frame_ms": 0.524,
+    "postprocess_time_per_frame_ms": 0.461,
+    "total_time_per_frame_ms": 2.94,
+    "eval_split": "test",
+    "num_classes": 1,
+    "map50": 0.9844503512741267,
+    "map50_95": 0.8484895670903185,
+    "precision": 0.9857931045209701,
+    "recall": 0.973871722117502,
+    "f1": 0.9797961521799643,
+    "per_class_ap50_95": {
+      "person": 0.8484895670903185
+    },
+    "per_class_ap50": {
+      "person": 0.9844503512741267
+    },
+    "per_class_precision": {
+      "person": 0.9857931045209701
+    },
+    "per_class_recall": {
+      "person": 0.973871722117502
+    },
+    "per_class_f1": {
+      "person": 0.9797961521799643
+    },
+    "eval_imgsz": 640,
+    "eval_batch": 16,
+    "eval_rect": false,
+    "eval_half": false,
+    "eval_workers": 8,
+    "eval_device": 0,
+    "eval_dnn": false,
+    "epochs": 50,
+    "imgsz": 640,
+    "batch": 16,
+    "dataset": "/workspace/data/zedrgb-dataset/data.yaml",
+    "config_device": 0,
+    "fixed_input_inference_ms": 6.891,
+    "fixed_input_shape": "640x640",
+    "fixed_input_dtype": "torch.float32",
+    "fixed_input_device": "cuda:0",
+    "fixed_input_iters": 200,
+    "fixed_input_warmup": 20,
+    "train_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolo11s7",
+    "eval_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolo11s/test3"
+  }
+]
