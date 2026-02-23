@@ -12,7 +12,10 @@ import yaml
 ROOT_2D = Path(__file__).resolve().parents[3]
 REPO_ROOT = Path(__file__).resolve().parents[4]
 MMDET_ROOT = ROOT_2D / "third_party" / "mmdetection"
-
+print(f"Using ROOT_2D: {ROOT_2D}")
+print(f"Using REPO_ROOT: {REPO_ROOT}")
+print(f"Using MMDET_ROOT: {MMDET_ROOT}")
+print(Path(__file__).resolve().parents)
 
 SUMMARY_FIELDS = [
     "model",

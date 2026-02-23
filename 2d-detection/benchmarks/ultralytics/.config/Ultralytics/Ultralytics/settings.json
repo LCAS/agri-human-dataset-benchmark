@@ -1,0 +1,21 @@
+{
+  "settings_version": "0.0.6",
+  "datasets_dir": "/workspace/datasets",
+  "weights_dir": "/workspace/agri-human-dataset-benchmark/weights",
+  "runs_dir": "/workspace/agri-human-dataset-benchmark/runs",
+  "uuid": "e0f73630c615eb2eee2fa4ee462674fa39e202b872f69a25b598551e27a75ac1",
+  "sync": true,
+  "api_key": "",
+  "openai_api_key": "",
+  "clearml": true,
+  "comet": true,
+  "dvc": true,
+  "hub": true,
+  "mlflow": true,
+  "neptune": true,
+  "raytune": true,
+  "tensorboard": false,
+  "wandb": false,
+  "vscode_msg": true,
+  "openvino_msg": true
+}

@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=mmdet_frcnn_dcn
-#SBATCH --output=/home/users/%u/mmdet_frcnn_dcn/logs/bench_%j.out
+#SBATCH --output=/home/users/%u/logs/mmdetection_bench_%j.out
 #SBATCH --time=7-00:00:00
 #SBATCH --mem=64G
 #SBATCH --ntasks=1

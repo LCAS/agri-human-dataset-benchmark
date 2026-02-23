@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=yolo_bench
-#SBATCH --output=/home/users/%u/yolo_bench/logs/bench_%j.out
+#SBATCH --output=/home/users/%u/logs/bench_ultralytics_%j.out
 #SBATCH --time=0-12:00:00
 #SBATCH --mem=64G
 #SBATCH --ntasks=1
@@ -13,53 +13,69 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=hvu@lincoln.ac.uk
 
-#SBATCH --container-image=/home/users/hvu/yolo_bench/ultralytics.sqfs
-#SBATCH --container-mounts=/home/users/hvu/yolo_bench:/workspace
-#SBATCH --container-workdir=/workspace/repo/2d-detector-benchmark
+# Container Settings
+#SBATCH --container-image=/home/users/hvu/container-images/ultralytics.sqfs
+#SBATCH --container-mounts=/home/users/hvu:/workspace
+#SBATCH --container-workdir=/workspace/agri-human-dataset-benchmark/2d-detection/benchmarks/ultralytics
 
+# Reset environment to prevent host-container conflicts
 module purge
 
-mkdir -p /home/users/$USER/yolo_bench/logs
+# Create local logs directory if it doesn't exist
+mkdir -p /home/users/$USER/logs
+
+# Environment Variables for Python/Pip
 export PIP_NO_CACHE_DIR=1
 export PYTHONUNBUFFERED=1
-export MASTER_ADDR=127.0.0.1
-export MASTER_PORT=29500
 
-export YOLO_CONFIG_DIR=/workspace/.config/Ultralytics
-export MPLCONFIGDIR=/workspace/.config/matplotlib
+# Configuration and Output Paths (Inside the container)
+export YOLO_CONFIG_DIR=/workspace/agri-human-dataset-benchmark/2d-detection/benchmarks/ultralytics/.config/Ultralytics
+export MPLCONFIGDIR=/workspace/agri-human-dataset-benchmark/2d-detection/benchmarks/ultralytics/.config/matplotlib
+export config_dir=/workspace/agri-human-dataset-benchmark/2d-detection/benchmarks/ultralytics/configs
+export out_dir=/workspace/agri-human-dataset-benchmark/2d-detection/reports/benchmarks/summary/ultralytics
+export VENV_PATH=/workspace/agri-human-dataset-benchmark/2d-detection/benchmarks/ultralytics/.venv
 
-export REPO_ROOT=/workspace/repo/2d-detector-benchmark
-export BENCH_ROOT=$REPO_ROOT/2d-detection/benchmarks/ultralytics
-export BENCH_CONFIG=$BENCH_ROOT/configs/benchmark_ultralytics_fisheye.yaml
-export BENCH_OUT=$REPO_ROOT/2d-detection/reports/benchmarks/ultralytics/summary_fisheye.csv
+# TODO: Configure the specific benchmark settings
+export config_file='benchmark_ultralytics_fisheye.yaml'
+export out_file='summary_ultralytics_fisheye.csv'
 
-# Basic sanity check
-srun bash -lc "python -V && nvidia-smi || true"
+# Single srun block to maintain environment consistency
+srun bash -c "
+  set -e
+  echo '--- System Check ---'
+  python -V
+  nvidia-smi
+  
+  echo '--- Setting up Directories ---'
+  mkdir -p \$YOLO_CONFIG_DIR \$MPLCONFIGDIR \$out_dir
 
-srun bash -lc '
-set -e
-cd $BENCH_ROOT
-mkdir -p /workspace/.config/Ultralytics /workspace/.config/matplotlib
-if [ ! -d /workspace/.venv ]; then
-  python -m venv /workspace/.venv
-  source /workspace/.venv/bin/activate
-  pip install -U pip
-  pip install -r requirements.txt
-else
-  source /workspace/.venv/bin/activate
-fi
+  echo '--- Virtual Environment Management ---'
+  # Create venv if it doesn't exist
+  if [ ! -d \$VENV_PATH ]; then
+    echo 'Creating new virtual environment...'
+    python -m venv \$VENV_PATH
+    source \$VENV_PATH/bin/activate
+    pip install -U pip
+    if [ -f requirements.txt ]; then
+      pip install -r requirements.txt
+    fi
+  else
+    echo 'Using existing virtual environment.'
+    source \$VENV_PATH/bin/activate
+  fi
 
-python -c "import torch; print(\"CUDA:\", torch.cuda.is_available())"
-'
+  echo '--- Hardware Verification ---'
+  python -c 'import torch; print(\"CUDA Available:\", torch.cuda.is_available()); print(\"Device Name:\", torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"None\")'
 
-srun bash -lc '
-set -e
-cd $REPO_ROOT
-source /workspace/.venv/bin/activate
+  echo '--- Starting Benchmark ---'
+  # Standard single-node/single-GPU flags
+  export RANK=-1
+  export LOCAL_RANK=-1
+  export WORLD_SIZE=1
 
-export RANK=-1
-export LOCAL_RANK=-1
-export WORLD_SIZE=1
+  python src/run_benchmark.py \
+    --config \$config_dir/\$config_file \
+    --out \$out_dir/\$out_file
 
-python $BENCH_ROOT/src/run_benchmark.py --config $BENCH_CONFIG --out $BENCH_OUT
-'
+  echo '--- Job Completed ---'
+"
