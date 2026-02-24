@@ -14,4 +14,4 @@ models:
     config: 2d-detection/benchmarks/mmdetection/configs/models/faster_rcnn_r50_fpn_fisheye.py
   - name: faster-rcnn_r50_fpn_dcn_fisheye
     config: 2d-detection/benchmarks/mmdetection/configs/models/faster_rcnn_r50_fpn_dcn_fisheye.py
-notes: "Benchmark settings for Faster R-CNN + DCN on fisheye dataset"
+notes: "Benchmark settings for Faster R-CNN with and without DCN on fisheye dataset"
