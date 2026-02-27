@@ -1,7 +1,7 @@
 auto_scale_lr = dict(base_batch_size=16, enable=False)
 backend_args = None
 data_root = '/workspace/data/fisheye-dataset-coco-format/'
-dataset_type = 'CocoDataset'
+dataset_type = 'FisheyeDataset'
 default_hooks = dict(
     checkpoint=dict(
         interval=1,
@@ -20,7 +20,7 @@ env_cfg = dict(
     dist_cfg=dict(backend='nccl'),
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 launcher = 'none'
-load_from = None
+load_from = '/workspace/agri-human-dataset-benchmark/2d-detection/reports/benchmarks/mmdetection/runs/agri-human-detection/faster-rcnn_r50_fpn_fisheye/best_coco_bbox_mAP_epoch_10.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
 metainfo = dict(classes=('person', ))
@@ -234,7 +234,7 @@ test_dataloader = dict(
                 type='PackDetInputs'),
         ],
         test_mode=True,
-        type='CocoDataset'),
+        type='FisheyeDataset'),
     drop_last=False,
     num_workers=2,
     persistent_workers=True,
@@ -285,7 +285,7 @@ train_dataloader = dict(
             dict(prob=0.5, type='RandomFlip'),
             dict(type='PackDetInputs'),
         ],
-        type='CocoDataset'),
+        type='FisheyeDataset'),
     num_workers=2,
     persistent_workers=True,
     sampler=dict(shuffle=True, type='DefaultSampler'))
@@ -326,7 +326,7 @@ val_dataloader = dict(
                 type='PackDetInputs'),
         ],
         test_mode=True,
-        type='CocoDataset'),
+        type='FisheyeDataset'),
     drop_last=False,
     num_workers=2,
     persistent_workers=True,
