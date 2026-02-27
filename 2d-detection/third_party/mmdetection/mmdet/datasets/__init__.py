@@ -14,6 +14,7 @@ from .dataset_wrappers import ConcatDataset, MultiImageMixDataset
 from .deepfashion import DeepFashionDataset
 from .dod import DODDataset
 from .dsdl import DSDLDetDataset
+from .fisheye import FisheyeDataset
 from .flickr30k import Flickr30kDataset
 from .isaid import iSAIDDataset
 from .lvis import LVISDataset, LVISV1Dataset, LVISV05Dataset
@@ -49,5 +50,5 @@ __all__ = [
     'BaseSegDataset', 'ADE20KSegDataset', 'CocoSegDataset',
     'ADE20KInstanceDataset', 'iSAIDDataset', 'V3DetDataset', 'ConcatDataset',
     'ODVGDataset', 'MDETRStyleRefCocoDataset', 'DODDataset',
-    'CustomSampleSizeSampler', 'Flickr30kDataset'
+    'CustomSampleSizeSampler', 'FisheyeDataset', 'Flickr30kDataset'
 ]
