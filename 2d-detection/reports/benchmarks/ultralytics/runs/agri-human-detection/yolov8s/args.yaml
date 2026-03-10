@@ -1,7 +1,7 @@
 task: detect
 mode: train
 model: yolov8s.pt
-data: coco128.yaml
+data: /workspace/data/fisheye-yolo/data.yaml
 epochs: 50
 time: null
 patience: 100

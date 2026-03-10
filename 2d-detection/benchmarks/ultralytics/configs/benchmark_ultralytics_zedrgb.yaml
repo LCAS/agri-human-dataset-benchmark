@@ -1,4 +1,4 @@
-dataset: /workspace/data/zedrgb-dataset/data.yaml
+dataset: /workspace/data/zedrgb-yolo/data.yaml
 imgsz: 640
 epochs: 50
 batch: 16

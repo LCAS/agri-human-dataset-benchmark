@@ -1,7 +1,7 @@
 task: detect
 mode: train
 model: yolo11s.pt
-data: /workspace/data/kitti-dataset/data.yaml
+data: /workspace/data/zedrgb-yolo/data.yaml
 epochs: 50
 time: null
 patience: 100

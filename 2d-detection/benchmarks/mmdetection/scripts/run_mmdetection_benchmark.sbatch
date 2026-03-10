@@ -34,8 +34,8 @@ export CACHE_ROOT=$BENCH_ROOT/.cache
 export OUT_DIR=$REPO_ROOT/2d-detection/reports/benchmarks/mmdetection
 
 # Benchmark Settings
-export CONFIG_FILE='benchmark_mmdetection_fisheye.yaml'
-export OUT_FILE='summary_mmdetection_fisheye.csv'
+export CONFIG_FILE='benchmark_mmdetection_kitti_filtered.yaml'
+export OUT_FILE='summary_mmdetection_kitti_filtered.csv'
 
 srun bash -c "
     set -e

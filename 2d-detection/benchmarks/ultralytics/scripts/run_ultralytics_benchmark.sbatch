@@ -36,8 +36,8 @@ export out_dir=/workspace/agri-human-dataset-benchmark/2d-detection/reports/benc
 export VENV_PATH=/workspace/agri-human-dataset-benchmark/2d-detection/benchmarks/ultralytics/.venv
 
 # TODO: Configure the specific benchmark settings
-export config_file='benchmark_ultralytics_fisheye.yaml'
-export out_file='summary_ultralytics_fisheye.csv'
+export config_file='benchmark_ultralytics_zedrgb_to_kitti_filtered.yaml'
+export out_file='summary_ultralytics_zedrgb_to_kitti_filtered.csv'
 
 # Single srun block to maintain environment consistency
 srun bash -c "
@@ -73,7 +73,7 @@ srun bash -c "
   export LOCAL_RANK=-1
   export WORLD_SIZE=1
 
-  python src/run_benchmark.py \
+  python src/transfer_eval.py \
     --config \$config_dir/\$config_file \
     --out \$out_dir/\$out_file
 
