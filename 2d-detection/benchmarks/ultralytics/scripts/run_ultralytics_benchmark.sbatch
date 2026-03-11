@@ -36,8 +36,8 @@ export out_dir=/workspace/agri-human-dataset-benchmark/2d-detection/reports/benc
 export VENV_PATH=/workspace/agri-human-dataset-benchmark/2d-detection/benchmarks/ultralytics/.venv
 
 # TODO: Configure the specific benchmark settings
-export config_file='benchmark_ultralytics_fisheye_to_kitti_filtered.yaml'
-export out_file='summary_ultralytics_fisheye_to_kitti_filtered.csv'
+export config_file='benchmark_ultralytics_fieldsafepedestrian_to_zedrgb.yaml'
+export out_file='summary_ultralytics_fieldsafepedestrian_to_zedrgb.csv'
 
 # Single srun block to maintain environment consistency
 srun bash -c "
