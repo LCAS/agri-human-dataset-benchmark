@@ -1,4 +1,4 @@
-dataset: /workspace/data/fisheye-yolo/data.yaml
+dataset: /workspace/data/kitti-filtered-yolo/data.yaml
 imgsz: 640
 epochs: 50
 batch: 16
@@ -15,6 +15,6 @@ benchmark_iters: 200
 project: reports/benchmarks/ultralytics/runs
 name: agri-human-detection
 models:
-  - yolov8s.pt
-  - yolo11s.pt
+  - yolov8s.yaml
+  - yolo11s.yaml
 notes: "Baseline benchmark settings for YOLOv8 vs YOLOv11"

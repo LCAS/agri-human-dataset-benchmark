@@ -1,4 +1,4 @@
-dataset: /workspace/data/fisheye-yolo/data.yaml
+dataset: /workspace/data/fieldsafepedestrian-yolo/data.yaml
 imgsz: 640
 epochs: 50
 batch: 16
