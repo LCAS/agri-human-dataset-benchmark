@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=yolo_bench
 #SBATCH --output=/home/users/%u/logs/bench_ultralytics_%j.out
-#SBATCH --time=0-12:00:00
+#SBATCH --time=7-00:00:00
 #SBATCH --mem=64G
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
@@ -9,7 +9,7 @@
 #SBATCH --nodes=1
 #SBATCH --partition=gpu
 #SBATCH --gpus=nvidia_rtx_a6000:1
-#SBATCH --qos=normal
+#SBATCH --qos=long
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=hvu@lincoln.ac.uk
 
@@ -36,8 +36,8 @@ export out_dir=/workspace/agri-human-dataset-benchmark/2d-detection/reports/benc
 export VENV_PATH=/workspace/agri-human-dataset-benchmark/2d-detection/benchmarks/ultralytics/.venv
 
 # TODO: Configure the specific benchmark settings
-export config_file='benchmark_ultralytics_zedrgb_to_kitti_filtered.yaml'
-export out_file='summary_ultralytics_zedrgb_to_kitti_filtered.csv'
+export config_file='benchmark_ultralytics_fisheye_to_kitti_filtered.yaml'
+export out_file='summary_ultralytics_fisheye_to_kitti_filtered.csv'
 
 # Single srun block to maintain environment consistency
 srun bash -c "
@@ -73,6 +73,7 @@ srun bash -c "
   export LOCAL_RANK=-1
   export WORLD_SIZE=1
 
+  # TODO: Change "run_benchmark.py" to your actual benchmark script if different
   python src/transfer_eval.py \
     --config \$config_dir/\$config_file \
     --out \$out_dir/\$out_file
