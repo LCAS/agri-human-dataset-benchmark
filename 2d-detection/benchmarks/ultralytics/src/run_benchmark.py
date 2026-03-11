@@ -90,17 +90,17 @@ def benchmark_fixed_input(model: YOLO, imgsz, iters: int, warmup: int) -> dict:
 def train_and_eval(model_name: str, cfg: dict) -> dict:
     model = YOLO(model_name)
     start = time.time()
-    # train_results = model.train(
-    #     data=cfg["dataset"],
-    #     imgsz=cfg["imgsz"],
-    #     epochs=cfg["epochs"],
-    #     batch=cfg["batch"],
-    #     device=cfg.get("device"),
-    #     seed=cfg["seed"],
-    #     project=cfg["project"],
-    #     name=f'{cfg["name"]}/{Path(model_name).stem}',
-    #     verbose=True,
-    # )
+    train_results = model.train(
+        data=cfg["dataset"],
+        imgsz=cfg["imgsz"],
+        epochs=cfg["epochs"],
+        batch=cfg["batch"],
+        device=cfg.get("device"),
+        seed=cfg["seed"],
+        project=cfg["project"],
+        name=f'{cfg["name"]}/{Path(model_name).stem}',
+        verbose=True,
+    )
     train_time = time.time() - start
 
     eval_split = cfg.get("eval_split", "val")
@@ -213,7 +213,7 @@ def train_and_eval(model_name: str, cfg: dict) -> dict:
         )
         metrics.update(bench)
 
-    # metrics["train_results_dir"] = str(train_results.save_dir)
+    metrics["train_results_dir"] = str(train_results.save_dir)
     metrics["eval_results_dir"] = str(eval_results.save_dir)
     return metrics
 
