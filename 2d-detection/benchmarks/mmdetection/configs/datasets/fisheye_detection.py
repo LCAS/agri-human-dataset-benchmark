@@ -1,6 +1,6 @@
 # dataset settings
 dataset_type = 'FisheyeDataset'
-data_root = '/workspace/data/fisheye-dataset-coco-format/'
+data_root = '/workspace/data/fisheye-coco/'
 
 metainfo = dict(classes=('person',))
 
@@ -75,9 +75,13 @@ val_evaluator = dict(
     metric='bbox',
     format_only=False,
     backend_args=backend_args)
-test_evaluator = dict(
-    type='CocoMetric',
-    ann_file=data_root + 'annotations/instances_test.json',
-    metric='bbox',
-    format_only=False,
-    backend_args=backend_args)
+
+## TODO: Since the test set is not available, we temporarily use the validation set for testing. Please replace it with the actual test set and annotation file when they are available.
+test_dataloader = val_dataloader
+test_evaluator = val_evaluator
+# test_evaluator = dict(
+#     type='CocoMetric',
+#     ann_file=data_root + 'annotations/instances_test.json',
+#     metric='bbox',
+#     format_only=False,
+#     backend_args=backend_args)
