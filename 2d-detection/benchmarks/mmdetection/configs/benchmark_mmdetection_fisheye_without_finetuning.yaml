@@ -1,0 +1,14 @@
+device: 0
+seed: 42
+benchmark_fixed_input: true
+benchmark_warmup: 20
+benchmark_iters: 200
+prefer_best_checkpoint: false
+max_keep_ckpts: 3
+project: 2d-detection/reports/benchmarks/mmdetection/runs
+name: agri-human-detection-without-finetuning
+models:
+  - name: faster-rcnn_r50_caffe_fpn_ms_coco-person_fisheye_without_finetuning
+    config: 2d-detection/benchmarks/mmdetection/configs/models/faster_rcnn_r50_caffe_fpn_ms_coco_person_fisheye_without_finetuning.py
+    train: false
+notes: "Benchmark settings for zero-shot Faster R-CNN COCO-person evaluation on fisheye dataset"

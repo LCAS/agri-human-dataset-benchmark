@@ -5,7 +5,8 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from urllib.parse import urlparse
 
 import yaml
 
@@ -124,6 +125,17 @@ def _resolve_path(path_str: str, repo_root: Path) -> Path:
     if path.is_absolute():
         return path
     return (repo_root / path).resolve()
+
+
+def _is_remote_ref(path_str: str) -> bool:
+    parsed = urlparse(str(path_str))
+    return parsed.scheme in {"http", "https"}
+
+
+def _resolve_checkpoint_ref(path_str: str, repo_root: Path) -> str:
+    if _is_remote_ref(path_str):
+        return str(path_str)
+    return str(_resolve_path(path_str, repo_root))
 
 
 def _unwrap_dataset(dataset_cfg: Dict[str, Any]) -> Dict[str, Any]:
@@ -256,10 +268,10 @@ def _best_checkpoint(work_dir: Path, metric_name: Optional[str]) -> Optional[Pat
 
 def _select_eval_checkpoint(
     work_dir: Path,
-    explicit_checkpoint: Optional[Path],
+    explicit_checkpoint: Optional[Union[str, Path]],
     prefer_best: bool,
     best_metric_name: Optional[str],
-) -> Optional[Path]:
+) -> Optional[Union[str, Path]]:
     if explicit_checkpoint is not None:
         return explicit_checkpoint
     if prefer_best:
@@ -269,8 +281,12 @@ def _select_eval_checkpoint(
     return _latest_checkpoint(work_dir)
 
 
-def _epoch_from_checkpoint_name(checkpoint: Path) -> Optional[int]:
-    name = checkpoint.stem
+def _epoch_from_checkpoint_name(checkpoint: Union[str, Path]) -> Optional[int]:
+    checkpoint_str = str(checkpoint)
+    if _is_remote_ref(checkpoint_str):
+        name = Path(urlparse(checkpoint_str).path).stem
+    else:
+        name = Path(checkpoint_str).stem
     if "_epoch_" in name:
         tail = name.split("_epoch_", 1)[1]
         if tail.isdigit():
@@ -322,7 +338,7 @@ def _to_csvable(value: Any) -> Any:
 
 def benchmark_fixed_input(
     cfg_path: Path,
-    checkpoint_path: Optional[Path],
+    checkpoint_path: Optional[Union[str, Path]],
     device: str,
     shape_hw: Optional[Tuple[int, int]],
     iters: int,
@@ -413,10 +429,12 @@ def train_and_eval_model(
     _configure_checkpoint_hook(cfg, bench_cfg)
 
     train_enabled = bool(model_item.get("train", True))
+    # `checkpoint` is an optional benchmark-YAML override. If it is absent,
+    # eval-only runs can still use the model config's `load_from`.
     checkpoint_path = model_item.get("checkpoint")
     if checkpoint_path:
-        checkpoint = _resolve_path(checkpoint_path, repo_root)
-        cfg.load_from = str(checkpoint)
+        checkpoint = _resolve_checkpoint_ref(checkpoint_path, repo_root)
+        cfg.load_from = checkpoint
     else:
         checkpoint = None
 
@@ -439,6 +457,10 @@ def train_and_eval_model(
     best_metric_name = bench_cfg.get("save_best_metric")
 
     checkpoint_for_eval = checkpoint if not train_enabled else None
+    # For eval-only runs without a YAML-level checkpoint override, fall back to
+    # the checkpoint declared in the MMDetection config file.
+    if checkpoint_for_eval is None and not train_enabled and cfg.get("load_from") is not None:
+        checkpoint_for_eval = str(cfg.load_from)
     checkpoint = _select_eval_checkpoint(
         work_dir=work_dir,
         explicit_checkpoint=checkpoint_for_eval,
