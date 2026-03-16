@@ -1,9 +1,9 @@
 """
-Transfer evaluation: load fine-tuned YOLO checkpoints (trained on zedrgb)
-and evaluate them on a different dataset (e.g. COCO val) to measure generalisation.
+Transfer evaluation: load fine-tuned YOLO checkpoints (e.g., trained on zedrgb)
+and evaluate them on a different dataset (e.g., COCO val) to measure generalisation.
 
 Usage:
-    python transfer_eval.py --config configs/transfer_eval_coco.yaml
+    python transfer_eval.py --config configs/benchmark_ultralytics_zedrgb_to_coco2017_filtered.yaml
     python transfer_eval.py \
         --checkpoints \
             /workspace/.../yolov8s/weights/best.pt \
@@ -244,8 +244,8 @@ def transfer_eval(checkpoint_path: str, cfg: dict) -> dict:
 # ---------------------------------------------------------------------------
 
 def main() -> None:
-    default_config = BENCH_ROOT / "configs" / "transfer_eval_coco.yaml"
-    default_out    = ROOT_2D / "reports" / "benchmarks" / "ultralytics" / "transfer_summary.csv"
+    default_config = BENCH_ROOT / "configs" / "benchmark_ultralytics_zedrgb_to_coco2017_filtered.yaml"
+    default_out    = ROOT_2D / "reports" / "benchmarks" / "summary" / "ultralytics" / "summary_ultralytics_zedrgb_to_coco2017_filtered.csv"
 
     parser = argparse.ArgumentParser(
         description="Transfer evaluation: run fine-tuned YOLO checkpoints on a new dataset."

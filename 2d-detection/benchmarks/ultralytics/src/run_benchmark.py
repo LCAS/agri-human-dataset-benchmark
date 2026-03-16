@@ -220,7 +220,7 @@ def train_and_eval(model_name: str, cfg: dict) -> dict:
 
 def main() -> None:
     default_config = BENCH_ROOT / "configs" / "benchmark_ultralytics_coco128.yaml"
-    default_out = ROOT_2D / "reports" / "benchmarks" / "ultralytics" / "summary.csv"
+    default_out = ROOT_2D / "reports" / "benchmarks" / "summary" / "ultralytics" / "summary.csv"
 
     parser = argparse.ArgumentParser(description="Run YOLOv8 vs YOLOv11 benchmark.")
     parser.add_argument(
