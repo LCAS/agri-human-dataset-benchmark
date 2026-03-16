@@ -11,5 +11,5 @@ models:
   - name: faster-rcnn_r50_fpn_coco2017_filtered_to_zedrgb
     config: 2d-detection/benchmarks/mmdetection/configs/models/faster_rcnn_r50_fpn_zedrgb.py
     train: false
-    checkpoint: __REPLACE_WITH_SOURCE_CHECKPOINT__
+    checkpoint: /workspace/agri-human-dataset-benchmark/2d-detection/reports/benchmarks/mmdetection/runs/coco2017_filtered/faster-rcnn_r50_fpn_coco2017_filtered/best_coco_bbox_mAP_epoch_12.pth
 notes: "Transfer evaluation: fine-tuned on coco2017-filtered-coco, evaluated on zedrgb-coco"
