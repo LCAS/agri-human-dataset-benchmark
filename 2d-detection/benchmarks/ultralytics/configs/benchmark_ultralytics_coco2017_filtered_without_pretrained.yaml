@@ -1,4 +1,6 @@
-dataset: /workspace/data/coco2017-filtered-yolo/data.yaml
+mode: train_eval
+train_dataset: /workspace/data/coco2017-filtered-yolo/data.yaml
+eval_dataset: /workspace/data/coco2017-filtered-yolo/data.yaml
 imgsz: 640
 epochs: 50
 batch: 16
@@ -15,6 +17,8 @@ benchmark_iters: 200
 project: reports/benchmarks/ultralytics/runs
 name: agri-human-detection
 models:
-  - yolov8s.yaml
-  - yolo11s.yaml
-notes: "Baseline benchmark settings for YOLOv8 vs YOLOv11"
+- name: yolov8s
+  source: yolov8s.yaml
+- name: yolo11s
+  source: yolo11s.yaml
+notes: From-scratch training benchmark on coco2017-filtered without pretrained weights

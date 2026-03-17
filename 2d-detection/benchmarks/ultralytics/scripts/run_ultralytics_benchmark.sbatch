@@ -73,8 +73,7 @@ srun bash -c "
   export LOCAL_RANK=-1
   export WORLD_SIZE=1
 
-  # TODO: Change "run_benchmark.py" to your actual benchmark script if different
-  python src/transfer_eval.py \
+  python src/run_benchmark.py \
     --config \$config_dir/\$config_file \
     --out \$out_dir/\$out_file
 

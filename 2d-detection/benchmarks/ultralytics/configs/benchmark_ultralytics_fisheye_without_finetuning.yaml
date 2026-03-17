@@ -1,11 +1,8 @@
-mode: train_eval
-train_dataset: /workspace/data/zedrgb-yolo/data.yaml
-eval_dataset: /workspace/data/zedrgb-yolo/data.yaml
+mode: eval_only
+eval_dataset: /workspace/data/fisheye-yolo/data.yaml
 imgsz: 640
-epochs: 50
 batch: 16
 device: 0
-seed: 42
 eval_split: val
 rect: false
 half: false
@@ -15,10 +12,11 @@ benchmark_fixed_input: true
 benchmark_warmup: 20
 benchmark_iters: 200
 project: reports/benchmarks/ultralytics/runs
-name: agri-human-detection
+name: agri-human-detection-without-finetuning
 models:
 - name: yolov8s
   source: yolov8s.pt
 - name: yolo11s
   source: yolo11s.pt
-notes: Baseline benchmark settings for YOLOv8 vs YOLOv11
+notes: Zero-shot benchmark on fisheye using pretrained Ultralytics checkpoints without
+  fine-tuning
