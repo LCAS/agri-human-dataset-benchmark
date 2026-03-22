@@ -31,11 +31,11 @@ export MMDET_ROOT=$REPO_ROOT/2d-detection/third_party/mmdetection
 export BENCH_ROOT=$REPO_ROOT/2d-detection/benchmarks/mmdetection
 export VENV_PATH=$BENCH_ROOT/.venv
 export CACHE_ROOT=$BENCH_ROOT/.cache
-export OUT_DIR=$REPO_ROOT/2d-detection/reports/benchmarks/mmdetection
+export OUT_DIR=$REPO_ROOT/2d-detection/reports/benchmarks/summary/mmdetection
 
-# Benchmark Settings
-export CONFIG_FILE='benchmark_mmdetection_kitti_filtered.yaml'
-export OUT_FILE='summary_mmdetection_kitti_filtered.csv'
+# TODO: Benchmark Settings
+export CONFIG_FILE='benchmark_mmdetection_fieldsafepedestrian_to_zedrgb.yaml'
+export OUT_FILE='summary_mmdetection_fieldsafepedestrian_to_zedrgb.csv'
 
 srun bash -c "
     set -e
