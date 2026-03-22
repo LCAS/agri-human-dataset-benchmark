@@ -584,7 +584,7 @@ def main() -> None:
         / "benchmark_mmdetection_fisheye.yaml"
     )
     default_out = (
-        ROOT_2D / "reports" / "benchmarks" / "mmdetection" / "summary_fisheye_mmdet.csv"
+        ROOT_2D / "reports" / "benchmarks" / "summary" / "mmdetection" / "summary_mmdetection_fisheye.csv"
     )
 
     parser = argparse.ArgumentParser(
