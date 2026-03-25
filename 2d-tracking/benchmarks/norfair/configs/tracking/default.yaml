@@ -1,0 +1,17 @@
+# Paths resolve from 2d-tracking unless absolute.
+# Update these placeholders before running.
+
+detections_json: reports/runs/example/detections.json
+frames_dir:
+mot_output: reports/runs/example/tracks.txt
+output_video:
+save_frames_dir:
+
+frame_rate: 30.0
+distance_function: iou
+distance_threshold: 0.75
+hit_counter_max: 15
+initialization_delay:
+detection_threshold: 0.0
+box_thickness: 2
+id_offset: 10

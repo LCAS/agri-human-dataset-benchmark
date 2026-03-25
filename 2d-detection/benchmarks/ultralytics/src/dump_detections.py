@@ -1,6 +1,6 @@
 """
 Dump YOLO detections to JSON files for 2D tracking pipeline.
-Each model in the config produces one JSON file consumable by norfair_tracker.py.
+Each model in the config produces one JSON file consumable by run_tracker.py.
 """
 from __future__ import annotations
 
@@ -127,7 +127,7 @@ def main():
     for model_spec in cfg.models:
         dump_detections(model_spec, cfg)
 
-    print("\nDone. All detection JSONs ready for norfair_tracker.py.")
+    print("\nDone. All detection JSONs ready for run_tracker.py.")
 
 
 if __name__ == "__main__":

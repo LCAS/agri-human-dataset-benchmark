@@ -1,0 +1,24 @@
+# Paths resolve from 2d-tracking unless absolute.
+# Update these placeholders before running.
+
+gt_mot: reports/runs/example/ground_truth.txt
+pred_mot: reports/runs/example/tracks.txt
+iou_threshold: 0.5
+
+output_csv: reports/summary/example_metrics.csv
+output_json: reports/summary/example_metrics.json
+
+metrics:
+  - num_frames
+  - idf1
+  - idp
+  - idr
+  - precision
+  - recall
+  - mota
+  - motp
+  - num_switches
+  - num_false_positives
+  - num_misses
+  - mostly_tracked
+  - mostly_lost

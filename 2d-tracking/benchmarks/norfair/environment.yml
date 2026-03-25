@@ -10,3 +10,4 @@ dependencies:
       - opencv-python==4.8.1.78
       - norfair==2.3.0
       - motmetrics==1.4.0
+      - pyyaml==6.0.2
