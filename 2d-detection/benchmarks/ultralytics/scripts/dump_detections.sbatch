@@ -33,7 +33,7 @@ export config_dir=/workspace/agri-human-dataset-benchmark/2d-detection/benchmark
 export VENV_PATH=/workspace/agri-human-dataset-benchmark/2d-detection/benchmarks/ultralytics/.venv
 
 # TODO: Set your predict config file
-export config_file='predict_zedrgb.yaml'
+export config_file='predict_out_vine_4swap+walk_st_ly_11_06_2024_2_label_zed_rgb.yaml'
 
 srun bash -c "
   set -e
