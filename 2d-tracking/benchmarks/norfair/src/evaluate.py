@@ -14,12 +14,18 @@ def evaluate_mot(gt_path: str, pred_path: str):
         acc,
         metrics=[
             "num_frames",
-            "mota", "motp",
             "idf1",
+            "idp",
+            "idr",
+            "precision",
+            "recall",
+            "mota", 
+            "motp",
             "num_switches",
-            "num_false_positives", "num_misses",
-            "mostly_tracked", "mostly_lost",
-            "precision", "recall"
+            "num_false_positives",
+            "num_misses",
+            "mostly_tracked",
+            "mostly_lost",
         ],
         name="sequence"
     )
@@ -34,4 +40,4 @@ def evaluate_mot(gt_path: str, pred_path: str):
     return summary
 
 # Example usage:
-evaluate_mot("gt.txt", "tracking.txt")
+evaluate_mot("D:/AOC/agri-human-dataset-benchmark/2d-tracking/benchmarks/norfair/outputs/out_vine_4swap+walk_st_ly_11_06_2024_2_label_gt_mot.txt", "D:/AOC/agri-human-dataset-benchmark/2d-tracking/benchmarks/norfair/outputs/out_vine_4swap+walk_st_ly_11_06_2024_2_label.txt")
