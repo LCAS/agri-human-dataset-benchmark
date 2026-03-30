@@ -1,0 +1,23 @@
+# Paths resolve from 2d-tracking unless absolute.
+
+detections_json: reports/runs/example/detections.json
+frames_dir:
+mot_output: reports/runs/example/boxmot_boosttrack_tracks.txt
+output_video:
+save_frames_dir:
+
+frame_rate: 30.0
+tracker: boosttrack
+reid_weights: /path/to/osnet_x0_25_msmt17.pt
+device: cpu
+half: false
+per_class: false
+box_thickness: 2
+id_offset: 10
+
+tracker_kwargs:
+  with_reid: true
+  det_thresh: 0.6
+  min_hits: 3
+  max_age: 60
+  iou_threshold: 0.3

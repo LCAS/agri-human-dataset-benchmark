@@ -1,0 +1,28 @@
+# Paths resolve from 2d-tracking unless absolute.
+# Update these placeholders before running.
+
+# Input / output paths
+detections_json: reports/runs/example/detections.json
+frames_dir:
+mot_output: reports/runs/example/boxmot_bytetrack_tracks.txt
+output_video:
+save_frames_dir:
+
+# Base tracker selection and runtime
+frame_rate: 30.0
+tracker: bytetrack
+reid_weights:
+device: cpu
+half: false
+per_class: false
+
+# Rendering options for annotated outputs
+box_thickness: 2
+id_offset: 10
+
+# Parameters forwarded directly to the chosen BoxMOT tracker
+tracker_kwargs:
+  min_conf: 0.1
+  track_thresh: 0.45
+  match_thresh: 0.8
+  track_buffer: 25

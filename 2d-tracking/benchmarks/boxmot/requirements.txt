@@ -1,0 +1,5 @@
+numpy==1.26.4
+opencv-python==4.8.1.78
+boxmot==12.0.2
+motmetrics==1.4.0
+PyYAML==6.0.2

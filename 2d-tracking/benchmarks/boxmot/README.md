@@ -1,7 +1,7 @@
-# Norfair Tracking Benchmark
+# BoxMOT Tracking Benchmark
 
 ## Structure
-- `src/run_tracker.py`: main Norfair tracking entrypoint
+- `src/run_tracker.py`: main BoxMOT tracking entrypoint
 - `src/convert_gt_to_mot.py`: wrapper around the shared MOT ground-truth conversion utility
 - `src/evaluate_mot.py`: wrapper around the shared MOT evaluation utility
 - `configs/tracking`: tracking run configs
@@ -10,6 +10,15 @@
 - `2d-tracking/common/mot`: shared tracker-agnostic MOT utilities
 - `2d-tracking/reports/runs`: generated tracking outputs shared across tracking models
 - `2d-tracking/reports/summary`: evaluation summaries shared across tracking models
+
+## Supported Trackers
+
+- `boosttrack`
+- `botsort`
+- `bytetrack`
+- `deepocsort`
+- `ocsort`
+- `strongsort`
 
 ## Environment
 
@@ -30,16 +39,24 @@ Run a tracking job from the default config:
 python src/run_tracker.py --config configs/tracking/default.yaml
 ```
 
-Or use explicit arguments:
+Switch trackers from the CLI:
 
 ```bash
 python src/run_tracker.py \
-  --detections-json /path/to/detections.json \
-  --frames-dir /path/to/frames \
-  --out-mot reports/runs/example/tracks.txt \
-  --out-video reports/runs/example/tracking.mp4 \
-  --distance-function iou \
-  --distance-threshold 0.75
+  --config configs/tracking/default.yaml \
+  --tracker boosttrack \
+  --reid-weights /path/to/osnet_x0_25_msmt17.pt
+```
+
+Override tracker-specific parameters without editing YAML:
+
+```bash
+python src/run_tracker.py \
+  --config configs/tracking/default.yaml \
+  --tracker botsort \
+  --reid-weights /path/to/osnet_x0_25_msmt17.pt \
+  --tracker-kwarg track_buffer=60 \
+  --tracker-kwarg with_reid=true
 ```
 
 Convert ground truth into MOT format:
@@ -65,5 +82,5 @@ python src/evaluate_mot.py --config configs/evaluation/default.yaml
 ## Notes
 
 - The tracking pipeline expects the detector export format with `File` and `Labels` fields.
-- `run_tracker.py` can run without frame rendering when only MOT output is required.
-- `convert_gt_to_mot.py` uses numeric suffixes in class names when present, otherwise a stable hashed fallback ID.
+- Appearance-based trackers need `reid_weights`; real frames are strongly recommended for accurate ReID and camera-motion compensation.
+- When a frame is missing on disk, `run_tracker.py` falls back to a blank canvas sized from the detections so long runs do not abort mid-sequence.

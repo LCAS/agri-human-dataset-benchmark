@@ -1,0 +1,26 @@
+# Paths resolve from 2d-tracking unless absolute.
+
+detections_json: reports/runs/example/detections.json
+frames_dir:
+mot_output: reports/runs/example/boxmot_ocsort_tracks.txt
+output_video:
+save_frames_dir:
+
+frame_rate: 30.0
+tracker: ocsort
+reid_weights:
+device: cpu
+half: false
+per_class: false
+box_thickness: 2
+id_offset: 10
+
+tracker_kwargs:
+  min_conf: 0.1
+  det_thresh: 0.2
+  max_age: 30
+  min_hits: 3
+  asso_threshold: 0.3
+  delta_t: 3
+  asso_func: iou
+  inertia: 0.2

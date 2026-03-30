@@ -1,0 +1,27 @@
+# Paths resolve from 2d-tracking unless absolute.
+
+detections_json: reports/runs/example/detections.json
+frames_dir:
+mot_output: reports/runs/example/boxmot_botsort_tracks.txt
+output_video:
+save_frames_dir:
+
+frame_rate: 30.0
+tracker: botsort
+reid_weights: /path/to/osnet_x0_25_msmt17.pt
+device: cpu
+half: false
+per_class: false
+box_thickness: 2
+id_offset: 10
+
+tracker_kwargs:
+  with_reid: true
+  track_high_thresh: 0.5
+  track_low_thresh: 0.1
+  new_track_thresh: 0.6
+  track_buffer: 30
+  match_thresh: 0.8
+  proximity_thresh: 0.5
+  appearance_thresh: 0.25
+  cmc_method: ecc

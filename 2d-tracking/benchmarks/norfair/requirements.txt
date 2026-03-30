@@ -1,0 +1,5 @@
+numpy==1.26.4
+opencv-python==4.8.1.78
+norfair==2.3.0
+motmetrics==1.4.0
+PyYAML==6.0.2

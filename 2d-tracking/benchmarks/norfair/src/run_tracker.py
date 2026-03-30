@@ -28,6 +28,8 @@ DEFAULT_CONFIG = BENCH_ROOT / "configs" / "tracking" / "default.yaml"
 
 @dataclass(frozen=True)
 class TrackerConfig:
+    """Normalized tracking settings after YAML loading and CLI overrides."""
+
     detections_json: Path
     frames_dir: Optional[Path] = None
     mot_output: Optional[Path] = None
@@ -44,6 +46,8 @@ class TrackerConfig:
 
 
 def _resolve_path(value: Optional[Any]) -> Optional[Path]:
+    """Resolve repo-relative config paths from the 2d-tracking root."""
+
     if value in (None, ""):
         return None
     path = Path(str(value))
@@ -53,6 +57,8 @@ def _resolve_path(value: Optional[Any]) -> Optional[Path]:
 
 
 def _optional_int(value: Optional[Any]) -> Optional[int]:
+    """Parse optional integer fields that may be blank or explicitly `None`."""
+
     if value in (None, ""):
         return None
     if isinstance(value, str) and value.strip().lower() == "none":
@@ -61,6 +67,8 @@ def _optional_int(value: Optional[Any]) -> Optional[int]:
 
 
 def load_config(path: Path) -> TrackerConfig:
+    """Load one tracking YAML file into the internal config dataclass."""
+
     with path.open("r", encoding="utf-8") as file:
         raw = yaml.safe_load(file) or {}
 
@@ -84,8 +92,9 @@ def load_config(path: Path) -> TrackerConfig:
         id_offset=int(raw.get("id_offset", 10)),
     )
 
-# IMPORTANT: Double check the format of the bounding box to be sure we can convert it to Norfair's expected xyxy format.
 def _to_xyxy(box: Sequence[float]) -> Tuple[float, float, float, float]:
+    """Convert project boxes into Norfair's expected xyxy corner format."""
+
     # The detector export uses xywh, but older or ad hoc files may already be xyxy.
     x, y, w, h = map(float, box)
     if w > 0 and h > 0:
@@ -94,6 +103,8 @@ def _to_xyxy(box: Sequence[float]) -> Tuple[float, float, float, float]:
 
 
 def _labels_iter(labels_field: Any) -> Iterable[Tuple[str, Tuple[float, float, float, float]]]:
+    """Yield `(label, xyxy_box)` pairs from the supported detector JSON variants."""
+
     # Accept the small set of record shapes that have appeared in this project so
     # the tracker can consume detector exports without one-off conversion steps.
     if labels_field is None:
@@ -135,6 +146,8 @@ def _labels_iter(labels_field: Any) -> Iterable[Tuple[str, Tuple[float, float, f
 
 
 def detections_from_json_record(record: Dict[str, Any]) -> List[Detection]:
+    """Adapt one project detection record into the Norfair `Detection` objects."""
+
     detections: List[Detection] = []
     dropped = 0
 
@@ -156,6 +169,8 @@ def detections_from_json_record(record: Dict[str, Any]) -> List[Detection]:
 
 
 class MotWriter:
+    """Append tracked boxes to a MOTChallenge-format text file."""
+
     def __init__(self, path: Path):
         self.path = path
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -176,6 +191,8 @@ class MotWriter:
 
 
 def validate_config(cfg: TrackerConfig) -> None:
+    """Check input/output paths before the tracking loop starts."""
+
     if not cfg.detections_json.is_file():
         raise FileNotFoundError(f"Detections JSON not found: {cfg.detections_json}")
 
@@ -187,6 +204,8 @@ def validate_config(cfg: TrackerConfig) -> None:
 
 
 def run(cfg: TrackerConfig) -> None:
+    """Run one Norfair pass over the frame-ordered detection export."""
+
     validate_config(cfg)
     # Read the full frame-ordered detections file once. Each record is one frame.
     records = json.loads(cfg.detections_json.read_text(encoding="utf-8"))
@@ -273,6 +292,8 @@ def run(cfg: TrackerConfig) -> None:
 
 
 def parse_args() -> argparse.Namespace:
+    """Define the CLI that layers ad hoc overrides on top of the YAML config."""
+
     parser = argparse.ArgumentParser(
         description="Run Norfair tracking from a config or explicit args.",
         epilog=(
@@ -310,6 +331,8 @@ def parse_args() -> argparse.Namespace:
 
 
 def merge_cli_overrides(cfg: TrackerConfig, args: argparse.Namespace) -> TrackerConfig:
+    """Overlay any explicit CLI flags on top of the loaded YAML config."""
+
     # CLI flags intentionally override YAML so cluster scripts can reuse one base config.
     updates = {}
     if args.detections_json is not None:
@@ -342,6 +365,8 @@ def merge_cli_overrides(cfg: TrackerConfig, args: argparse.Namespace) -> Tracker
 
 
 def main() -> None:
+    """CLI entrypoint used by local scripts and SLURM launchers."""
+
     args = parse_args()
     cfg = load_config(args.config)
     cfg = merge_cli_overrides(cfg, args)
