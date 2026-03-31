@@ -1,3 +1,0 @@
-# Metrics
-
-::: norfair.metrics

@@ -1,2 +1,0 @@
-opencv-python==4.6.0.66
-importlib-metadata==4.8.3
