@@ -115,4 +115,8 @@ That future expansion can include:
 
 ## License
 
-This repository is licensed under Apache License 2.0. See [`LICENSE`](LICENSE).
+The repository's benchmark code and documentation are licensed under Apache License 2.0. See [`LICENSE`](LICENSE).
+
+Additional attribution information is recorded in [`NOTICE`](NOTICE).
+
+If third-party code is present in the repository, its original license and notices should be preserved until that code is removed.
