@@ -1,19 +1,17 @@
 # DeepSORT Tracking Benchmark
 
+This benchmark provides a local DeepSORT implementation tuned for the repository's common detection export format.
+
 ## Structure
+
 - `src/run_tracker.py`: main DeepSORT tracking entrypoint
-- `src/convert_gt_to_mot.py`: wrapper around the shared MOT ground-truth conversion utility
+- `src/convert_gt_to_mot.py`: wrapper around the shared GT-to-MOT utility
 - `src/evaluate_mot.py`: wrapper around the shared MOT evaluation utility
-- `configs/tracking`: tracking run configs
+- `configs/tracking`: tracking configs
 - `configs/evaluation`: evaluation configs
-- `scripts`: local and SLURM launchers
-- `2d-tracking/common/mot`: shared tracker-agnostic MOT utilities
-- `2d-tracking/reports/runs`: generated tracking outputs shared across tracking models
-- `2d-tracking/reports/summary`: evaluation summaries shared across tracking models
+- `scripts`: local and cluster launchers
 
 ## Environment
-
-Install the pinned Python dependencies from `requirements.txt`:
 
 ```bash
 python -m venv .venv
@@ -22,9 +20,18 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
+## Important Requirements
+
+DeepSORT in this repository is appearance-based and requires:
+
+- a real `frames_dir`
+- a frozen TensorFlow ReID graph, usually a `.pb` file such as `mars-small128.pb`
+
+Without those two inputs, the tracker cannot run correctly.
+
 ## Quick Start
 
-Run a tracking job from the default config:
+Run with the default YAML:
 
 ```bash
 python src/run_tracker.py --config configs/tracking/default.yaml
@@ -41,7 +48,27 @@ python src/run_tracker.py \
   --out-video reports/runs/example/deepsort_tracking.mp4
 ```
 
-Convert ground truth into MOT format:
+## Config Notes
+
+Key runtime fields include:
+
+- `min_confidence`
+- `min_detection_height`
+- `nms_max_overlap`
+- `max_cosine_distance`
+- `nn_budget`
+- `max_iou_distance`
+- `max_age`
+- `n_init`
+- `encoder_batch_size`
+- `reid_input_name`
+- `reid_output_name`
+
+The default tensor names are `images` and `features`, which match common MARS-style frozen graphs.
+
+## MOT Conversion And Evaluation
+
+Convert ground truth:
 
 ```bash
 python src/convert_gt_to_mot.py \
@@ -55,15 +82,12 @@ Evaluate predictions:
 python src/evaluate_mot.py --config configs/evaluation/default.yaml
 ```
 
+## Outputs
+
+- MOT predictions under `2d-tracking/reports/runs/`
+- optional rendered videos or annotated frames
+- summary CSV and JSON metrics under `2d-tracking/reports/summary/`
+
 ## Path Conventions
 
-- Paths in tracking and evaluation YAML configs resolve from `2d-tracking`.
-- Generated run artifacts belong under `2d-tracking/reports/runs/`.
-- Compact evaluation summaries belong under `2d-tracking/reports/summary/`.
-
-## Notes
-
-- The tracking pipeline expects the detector export format with `File` and `Labels` fields.
-- `frames_dir` is required because DeepSORT extracts appearance features from real image crops.
-- `model_path` should point to a frozen TensorFlow ReID graph such as `mars-small128.pb`.
-- `reid_input_name` and `reid_output_name` default to `images` and `features`, which matches common MARS exports.
+All relative paths in configs resolve from `2d-tracking`.
