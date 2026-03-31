@@ -1,0 +1,13 @@
+# OS and Python noise
+.DS_Store
+**/__pycache__/
+*.py[cod]
+
+# Local environments and caches
+**/.venv/
+**/.cache/
+**/.config/
+
+# Generated tracking artifacts
+2d-tracking/benchmarks/*/outputs/
+!2d-tracking/reports/runs/.gitkeep

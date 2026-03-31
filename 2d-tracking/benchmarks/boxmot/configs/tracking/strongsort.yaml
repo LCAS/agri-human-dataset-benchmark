@@ -1,0 +1,26 @@
+# Paths resolve from 2d-tracking unless absolute.
+
+detections_json: reports/runs/example/detections.json
+frames_dir:
+mot_output: reports/runs/example/boxmot_strongsort_tracks.txt
+output_video:
+save_frames_dir:
+
+frame_rate: 30.0
+tracker: strongsort
+reid_weights: /path/to/osnet_x0_25_msmt17.pt
+device: cpu
+half: false
+per_class: false
+box_thickness: 2
+id_offset: 10
+
+tracker_kwargs:
+  min_conf: 0.1
+  max_cos_dist: 0.2
+  max_iou_dist: 0.7
+  max_age: 30
+  n_init: 3
+  nn_budget: 100
+  mc_lambda: 0.98
+  ema_alpha: 0.9
