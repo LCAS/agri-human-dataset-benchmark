@@ -1,0 +1,30 @@
+# Paths resolve from 2d-tracking unless absolute.
+# Update these placeholders before running.
+
+# Input / output paths
+detections_json: reports/runs/example/detections.json
+frames_dir:
+model_path:
+mot_output: reports/runs/example/deepsort_tracks.txt
+output_video:
+save_frames_dir:
+
+# Tracker runtime and tuning
+frame_rate: 30.0
+min_confidence: 0.3
+min_detection_height: 0
+nms_max_overlap: 1.0
+max_cosine_distance: 0.2
+nn_budget:
+max_iou_distance: 0.7
+max_age: 30
+n_init: 3
+
+# Frozen graph details
+encoder_batch_size: 32
+reid_input_name: images
+reid_output_name: features
+
+# Rendering options for annotated outputs
+box_thickness: 2
+id_offset: 10
