@@ -1,15 +1,15 @@
 # BoxMOT Tracking Benchmark
 
+This benchmark wraps several BoxMOT trackers behind one consistent interface so they can be compared on the same detection export and evaluated with the same MOT metrics.
+
 ## Structure
+
 - `src/run_tracker.py`: main BoxMOT tracking entrypoint
-- `src/convert_gt_to_mot.py`: wrapper around the shared MOT ground-truth conversion utility
+- `src/convert_gt_to_mot.py`: wrapper around the shared GT-to-MOT utility
 - `src/evaluate_mot.py`: wrapper around the shared MOT evaluation utility
-- `configs/tracking`: tracking run configs
+- `configs/tracking`: tracking configs
 - `configs/evaluation`: evaluation configs
-- `scripts`: local and SLURM launchers
-- `2d-tracking/common/mot`: shared tracker-agnostic MOT utilities
-- `2d-tracking/reports/runs`: generated tracking outputs shared across tracking models
-- `2d-tracking/reports/summary`: evaluation summaries shared across tracking models
+- `scripts`: local and cluster launchers
 
 ## Supported Trackers
 
@@ -22,8 +22,6 @@
 
 ## Environment
 
-Install the pinned Python dependencies from `requirements.txt`:
-
 ```bash
 python -m venv .venv
 # Windows PowerShell: .\.venv\Scripts\Activate.ps1
@@ -33,13 +31,13 @@ python -m pip install -r requirements.txt
 
 ## Quick Start
 
-Run a tracking job from the default config:
+Run with the default YAML:
 
 ```bash
 python src/run_tracker.py --config configs/tracking/default.yaml
 ```
 
-Switch trackers from the CLI:
+Switch tracker from the CLI:
 
 ```bash
 python src/run_tracker.py \
@@ -48,7 +46,7 @@ python src/run_tracker.py \
   --reid-weights /path/to/osnet_x0_25_msmt17.pt
 ```
 
-Override tracker-specific parameters without editing YAML:
+Override tracker-specific parameters:
 
 ```bash
 python src/run_tracker.py \
@@ -59,7 +57,39 @@ python src/run_tracker.py \
   --tracker-kwarg with_reid=true
 ```
 
-Convert ground truth into MOT format:
+## Config Notes
+
+The base config controls:
+
+- `detections_json`
+- `frames_dir`
+- `mot_output`
+- `output_video`
+- `save_frames_dir`
+- `frame_rate`
+- `tracker`
+- `reid_weights`
+- `device`
+- `half`
+- `per_class`
+- `tracker_kwargs`
+
+`tracker_kwargs` are forwarded to the selected BoxMOT tracker after validation against the installed version's constructor.
+
+## When Frames Matter
+
+Some BoxMOT trackers can technically run with blank fallback frames, but appearance-heavy trackers usually should not. Real frames are strongly recommended for:
+
+- `strongsort`
+- `botsort` with ReID enabled
+- `boosttrack` when ReID is enabled
+- `deepocsort` unless embedding extraction is disabled
+
+If `frames_dir` is missing and a frame cannot be loaded, the wrapper synthesizes a blank canvas so the run can continue, but that is a fallback, not the preferred operating mode.
+
+## MOT Conversion And Evaluation
+
+Convert ground truth:
 
 ```bash
 python src/convert_gt_to_mot.py \
@@ -73,14 +103,12 @@ Evaluate predictions:
 python src/evaluate_mot.py --config configs/evaluation/default.yaml
 ```
 
+## Outputs
+
+- MOT predictions under `2d-tracking/reports/runs/`
+- optional rendered MP4 or frame dumps under the configured run directory
+- summary CSV and JSON metrics under `2d-tracking/reports/summary/`
+
 ## Path Conventions
 
-- Paths in tracking and evaluation YAML configs resolve from `2d-tracking`.
-- Generated run artifacts belong under `2d-tracking/reports/runs/`.
-- Compact evaluation summaries belong under `2d-tracking/reports/summary/`.
-
-## Notes
-
-- The tracking pipeline expects the detector export format with `File` and `Labels` fields.
-- Appearance-based trackers need `reid_weights`; real frames are strongly recommended for accurate ReID and camera-motion compensation.
-- When a frame is missing on disk, `run_tracker.py` falls back to a blank canvas sized from the detections so long runs do not abort mid-sequence.
+All relative paths in configs resolve from `2d-tracking`.
