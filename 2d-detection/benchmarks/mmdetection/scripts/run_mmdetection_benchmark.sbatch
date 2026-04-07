@@ -27,7 +27,6 @@ export MASTER_PORT=29520
 
 # Path Configuration
 export REPO_ROOT=/workspace/agri-human-dataset-benchmark
-export MMDET_ROOT=$REPO_ROOT/2d-detection/third_party/mmdetection
 export BENCH_ROOT=$REPO_ROOT/2d-detection/benchmarks/mmdetection
 export VENV_PATH=$BENCH_ROOT/.venv
 export CACHE_ROOT=$BENCH_ROOT/.cache
@@ -56,10 +55,9 @@ srun bash -c "
         pip install -U pip setuptools wheel
         pip install 'numpy<2' 'opencv-python-headless==4.11.0.86'
         pip install torch==2.1.2 torchvision==0.16.2 --index-url https://download.pytorch.org/whl/cu118
-        pip install -U openmim mmengine
+        pip install -U openmim
         pip install 'mmcv==2.1.0' -f https://download.openmmlab.com/mmcv/dist/cu118/torch2.1/index.html
-        pip install -r \$MMDET_ROOT/requirements.txt
-        pip install --no-build-isolation -v \$MMDET_ROOT
+        pip install -r \$BENCH_ROOT/requirements.txt
         pip install certifi
     else
         source \$VENV_PATH/bin/activate
