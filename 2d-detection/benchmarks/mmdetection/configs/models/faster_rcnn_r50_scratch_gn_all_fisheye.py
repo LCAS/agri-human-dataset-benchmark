@@ -1,6 +1,6 @@
 _base_ = 'mmdet::scratch/faster-rcnn_r50-scratch_fpn_gn-all_6x_coco.py'
 
-dataset_type = 'FisheyeDataset'
+dataset_type = 'CocoDataset'
 data_root = '/workspace/data/fisheye-coco/'
 
 metainfo = dict(classes=('person',))

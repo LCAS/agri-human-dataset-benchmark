@@ -1,5 +1,5 @@
 # dataset settings
-dataset_type = 'FieldsafepedestrianDataset'
+dataset_type = 'CocoDataset'
 data_root = '/workspace/data/fieldsafepedestrian-coco/'
 
 metainfo = dict(classes=('person',))

@@ -1,5 +1,5 @@
 # dataset settings
-dataset_type = 'KittiDataset'
+dataset_type = 'CocoDataset'
 data_root = '/workspace/data/kitti-filtered-coco/'
 
 metainfo = dict(classes=('person',))
