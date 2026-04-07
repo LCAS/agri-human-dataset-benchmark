@@ -1,6 +1,6 @@
 _base_ = 'mmdet::faster_rcnn/faster-rcnn_r50-caffe_fpn_ms-1x_coco-person.py'
 
-dataset_type = 'FieldsafepedestrianDataset'
+dataset_type = 'CocoDataset'
 data_root = '/workspace/data/fieldsafepedestrian-coco/'
 
 metainfo = dict(classes=('person',))

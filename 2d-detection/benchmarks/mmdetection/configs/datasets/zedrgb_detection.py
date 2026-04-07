@@ -1,5 +1,5 @@
 # dataset settings
-dataset_type = 'ZedrgbDataset'
+dataset_type = 'CocoDataset'
 data_root = '/workspace/data/zedrgb-coco/'
 
 metainfo = dict(classes=('person',))

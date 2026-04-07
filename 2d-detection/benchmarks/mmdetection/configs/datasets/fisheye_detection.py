@@ -1,5 +1,5 @@
 # dataset settings
-dataset_type = 'FisheyeDataset'
+dataset_type = 'CocoDataset'
 data_root = '/workspace/data/fisheye-coco/'
 
 metainfo = dict(classes=('person',))
