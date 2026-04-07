@@ -1,4 +1,4 @@
-_base_ = '../../../../third_party/mmdetection/configs/faster_rcnn/faster-rcnn_r50-caffe_fpn_ms-1x_coco-person.py'
+_base_ = 'mmdet::faster_rcnn/faster-rcnn_r50-caffe_fpn_ms-1x_coco-person.py'
 
 dataset_type = 'FisheyeDataset'
 data_root = '/workspace/data/fisheye-coco/'

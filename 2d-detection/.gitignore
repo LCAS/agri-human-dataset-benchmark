@@ -1,7 +1,5 @@
 # Generated training artifacts
 benchmarks/ultralytics/runs/
-third_party/mmdetection/runs/
-third_party/mmdetection/work_dirs/
 
 # Local virtual envs and caches
 **/.venv/

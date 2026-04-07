@@ -15,17 +15,27 @@ This module benchmarks MMDetection models, mainly Faster R-CNN variants, for agr
 - `configs/benchmark_*.yaml`: benchmark definitions selecting models and run settings
 - `configs/models/`: local MMDetection model configs used by the benchmark
 - `configs/datasets/`: dataset definitions for local agricultural and reference datasets
+- `requirements.txt`: pinned Python package requirements for this benchmark
 - `scripts/run_mmdetection_benchmark.sbatch`: cluster launcher and reference environment setup
 
 ## Environment
 
-This module depends on the vendored upstream code in `2d-detection/third_party/mmdetection`, plus matching versions of PyTorch, MMEngine, MMCV, and MMDetection itself.
+This module uses MMDetection as an external Python dependency. The current benchmark configuration is pinned to the standard `mmdet==3.3.0` package and compatible MMEngine/MMCV releases; there is no project-specific MMDetection fork required for the code currently in this repository.
+
+Install MMCV for your platform first, then install the benchmark requirements:
+
+```bash
+pip install 'mmcv==2.1.0' -f https://download.openmmlab.com/mmcv/dist/cu118/torch2.1/index.html
+pip install -r requirements.txt
+```
 
 The canonical environment recipe in this repository is the cluster script:
 
 - `scripts/run_mmdetection_benchmark.sbatch`
 
 That script shows the expected package versions and installation order. If you are setting up a local environment, use it as the reference rather than inventing a different stack.
+
+If future benchmark work requires framework-level MMDetection changes, keep those changes in an external fork of `open-mmlab/mmdetection` and replace the `mmdet==...` entry in `requirements.txt` with a git reference to that fork. Do not copy the full framework source back into this repository.
 
 ## Benchmark Config Schema
 
@@ -79,6 +89,7 @@ python src/run_benchmark.py \
 
 - benchmark YAML paths are typically resolved from the repository root
 - model config paths in benchmark YAML should point to local files under `2d-detection/benchmarks/mmdetection/configs/`
+- local model configs inherit upstream defaults via `mmdet::...` package config imports
 - checkpoints may be local files or remote HTTP or HTTPS references
 - report outputs are usually written under `2d-detection/reports/benchmarks/`
 

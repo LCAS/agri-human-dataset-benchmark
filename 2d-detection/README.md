@@ -19,8 +19,7 @@ The current configs already cover image domains such as `zedrgb`, `fisheye`, `fi
 ## Structure
 
 - `benchmarks/ultralytics`: YOLO-based benchmark runner and detection export tooling
-- `benchmarks/mmdetection`: MMDetection-based benchmark runner using local config files
-- `third_party/mmdetection`: vendored upstream MMDetection source
+- `benchmarks/mmdetection`: MMDetection-based benchmark runner using local config files plus an external `mmdet` install
 - `reports/benchmarks`: committed benchmark summaries and selected run artifacts
 - `notebooks`: analysis notebooks for comparing experiment outputs
 

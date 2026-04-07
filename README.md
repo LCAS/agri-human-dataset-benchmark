@@ -72,8 +72,7 @@ The current configs already reflect several image domains, including `zedrgb`, `
 |-- 2d-detection/
 |   |-- benchmarks/
 |   |-- notebooks/
-|   |-- reports/
-|   `-- third_party/
+|   `-- reports/
 |-- 2d-tracking/
 |   |-- benchmarks/
 |   |-- common/
@@ -93,9 +92,11 @@ Path conventions differ slightly by subsystem:
 
 Each workspace README explains its own path rules in more detail.
 
-## Third-Party Code
+## MMDetection Dependency
 
-The repository vendors upstream MMDetection under `2d-detection/third_party/mmdetection`. Treat that directory as third-party code. The custom benchmark logic for this project lives under the local `benchmarks/` directories.
+The MMDetection benchmark code in this repository is designed to use the external `mmdet` Python package rather than a vendored framework copy. Local benchmark logic and dataset-specific configs stay under `2d-detection/benchmarks/mmdetection/`.
+
+If framework-level MMDetection changes are ever required, they should live in an external fork of `open-mmlab/mmdetection` and be referenced as a dependency from environment setup documentation or `requirements.txt`, not copied into this repository.
 
 ## Intended Direction
 
@@ -119,4 +120,4 @@ The repository's benchmark code and documentation are licensed under Apache Lice
 
 Additional attribution information is recorded in [`NOTICE`](NOTICE).
 
-If third-party code is present in the repository, its original license and notices should be preserved until that code is removed.
+If third-party code is added to the repository in the future, its original license and notices should be preserved.
