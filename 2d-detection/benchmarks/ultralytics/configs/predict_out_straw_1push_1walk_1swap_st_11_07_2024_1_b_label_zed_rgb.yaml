@@ -1,11 +1,11 @@
-name: out_vine_4swap+walk_st_ly_11_06_2024_2_label_zed_rgb
+name: out_straw_1push_1walk_1swap_st_11_07_2024_1_b_label_zed_rgb
 device: 0
 workers: 8
 confidence: 0.25
 target_class: 0
 image_ext: png
 
-images_dir: /workspace/data/aghri-val/out_vine_4swap+walk_st_ly_11_06_2024_2_label/sensor_data/cam_zed_rgb
+images_dir: /workspace/data/aghri-val/out_straw_1push_1walk_1swap_st_11_07_2024_1_b_label/sensor_data/cam_zed_rgb
 output_dir: /workspace/agri-human-dataset-benchmark/2d-tracking/reports/runs/detections
 
 models:
