@@ -40,6 +40,9 @@ class TrackerSpec:
     eval_script: Path
     config_path: Path
     import_name: str
+    requires_frames: bool = False
+    reid_weights: Optional[Path] = None
+    model_path: Optional[Path] = None
 
 
 @dataclass(frozen=True)
@@ -76,6 +79,56 @@ TRACKER_SPECS = {
         eval_script=Path("benchmarks/boxmot/src/evaluate_mot.py"),
         config_path=Path("benchmarks/boxmot/configs/tracking/ocsort.yaml"),
         import_name="boxmot",
+    ),
+    "boxmot_strongsort": TrackerSpec(
+        key="boxmot_strongsort",
+        framework="boxmot",
+        run_script=Path("benchmarks/boxmot/src/run_tracker.py"),
+        eval_script=Path("benchmarks/boxmot/src/evaluate_mot.py"),
+        config_path=Path("benchmarks/boxmot/configs/tracking/strongsort.yaml"),
+        import_name="boxmot",
+        requires_frames=True,
+        reid_weights=Path("reports/runs/tracker_suite/_weights/osnet_x0_25_msmt17.pt"),
+    ),
+    "boxmot_botsort": TrackerSpec(
+        key="boxmot_botsort",
+        framework="boxmot",
+        run_script=Path("benchmarks/boxmot/src/run_tracker.py"),
+        eval_script=Path("benchmarks/boxmot/src/evaluate_mot.py"),
+        config_path=Path("benchmarks/boxmot/configs/tracking/botsort.yaml"),
+        import_name="boxmot",
+        requires_frames=True,
+        reid_weights=Path("reports/runs/tracker_suite/_weights/osnet_x0_25_msmt17.pt"),
+    ),
+    "boxmot_deepocsort": TrackerSpec(
+        key="boxmot_deepocsort",
+        framework="boxmot",
+        run_script=Path("benchmarks/boxmot/src/run_tracker.py"),
+        eval_script=Path("benchmarks/boxmot/src/evaluate_mot.py"),
+        config_path=Path("benchmarks/boxmot/configs/tracking/deepocsort.yaml"),
+        import_name="boxmot",
+        requires_frames=True,
+        reid_weights=Path("reports/runs/tracker_suite/_weights/osnet_x0_25_msmt17.pt"),
+    ),
+    "boxmot_boosttrack": TrackerSpec(
+        key="boxmot_boosttrack",
+        framework="boxmot",
+        run_script=Path("benchmarks/boxmot/src/run_tracker.py"),
+        eval_script=Path("benchmarks/boxmot/src/evaluate_mot.py"),
+        config_path=Path("benchmarks/boxmot/configs/tracking/boosttrack.yaml"),
+        import_name="boxmot",
+        requires_frames=True,
+        reid_weights=Path("reports/runs/tracker_suite/_weights/osnet_x0_25_msmt17.pt"),
+    ),
+    "deepsort": TrackerSpec(
+        key="deepsort",
+        framework="deepsort",
+        run_script=Path("benchmarks/deepsort/src/run_tracker.py"),
+        eval_script=Path("benchmarks/deepsort/src/evaluate_mot.py"),
+        config_path=Path("benchmarks/deepsort/configs/tracking/default.yaml"),
+        import_name="tensorflow",
+        requires_frames=True,
+        model_path=Path("reports/runs/tracker_suite/_weights/mars-small128.pb"),
     ),
 }
 
@@ -152,6 +205,23 @@ def normalize_gt_annotation(annotation_json: Path, output_json: Path) -> None:
     output_json.write_text(json.dumps(normalized, indent=2), encoding="utf-8")
 
 
+def infer_frames_dir(sequence_name: str, frames_root: Path) -> Optional[Path]:
+    """Infer the frame directory for one sequence name under the dataset root."""
+
+    camera_suffixes = {
+        "_zed_rgb": Path("sensor_data/cam_zed_rgb"),
+        "_front_fisheye": Path("sensor_data/cam_fish_front"),
+    }
+
+    for suffix, relative_camera_dir in camera_suffixes.items():
+        if sequence_name.endswith(suffix):
+            scenario_name = sequence_name.removesuffix(suffix)
+            frames_dir = frames_root / scenario_name / relative_camera_dir
+            if frames_dir.is_dir():
+                return frames_dir
+    return None
+
+
 def iter_tracking_inputs(
     sources: List[str],
     detections_dir: Path,
@@ -211,10 +281,15 @@ def run_command(command: List[str]) -> subprocess.CompletedProcess[str]:
     )
 
 
-def build_tracking_command(spec: TrackerSpec, detection_json: Path, output_mot: Path) -> List[str]:
+def build_tracking_command(
+    spec: TrackerSpec,
+    detection_json: Path,
+    output_mot: Path,
+    frames_dir: Optional[Path],
+) -> List[str]:
     """Build the CLI invocation for one tracker wrapper."""
 
-    return [
+    command = [
         sys.executable,
         str(spec.run_script),
         "--config",
@@ -224,6 +299,13 @@ def build_tracking_command(spec: TrackerSpec, detection_json: Path, output_mot: 
         "--out-mot",
         str(output_mot),
     ]
+    if frames_dir is not None:
+        command.extend(["--frames-dir", str(frames_dir)])
+    if spec.reid_weights is not None:
+        command.extend(["--reid-weights", str(spec.reid_weights)])
+    if spec.model_path is not None:
+        command.extend(["--model-path", str(spec.model_path)])
+    return command
 
 
 def build_evaluation_command(
@@ -293,6 +375,12 @@ def parse_args() -> argparse.Namespace:
         help="Directory containing GT MOT txt files.",
     )
     parser.add_argument(
+        "--frames-root",
+        type=Path,
+        default=Path(r"D:\AOC\datasets\aghri-val"),
+        help="Dataset root used to infer per-sequence frame directories.",
+    )
+    parser.add_argument(
         "--runs-dir",
         type=Path,
         default=Path("reports/runs/tracker_suite"),
@@ -332,6 +420,7 @@ def main() -> None:
     detections_dir = resolve_path(args.detections_dir)
     gt_annotations_dir = resolve_path(args.gt_annotations_dir)
     gt_dir = resolve_path(args.gt_dir)
+    frames_root = resolve_path(args.frames_root)
     runs_dir = resolve_path(args.runs_dir)
     summary_dir = resolve_path(args.summary_dir)
     generated_inputs_dir = runs_dir / "_inputs"
@@ -341,6 +430,7 @@ def main() -> None:
     runs_dir.mkdir(parents=True, exist_ok=True)
     summary_dir.mkdir(parents=True, exist_ok=True)
     generated_inputs_dir.mkdir(parents=True, exist_ok=True)
+    (runs_dir / "_weights").mkdir(parents=True, exist_ok=True)
 
     results: List[Dict[str, object]] = []
 
@@ -366,6 +456,7 @@ def main() -> None:
             pred_mot = sequence_dir / f"{tracker_key}_tracks.txt"
             metrics_csv = sequence_summary_dir / f"{tracker_key}_metrics.csv"
             metrics_json = sequence_summary_dir / f"{tracker_key}_metrics.json"
+            frames_dir = infer_frames_dir(input_record.gt_mot.stem, frames_root)
 
             # This base record captures the run metadata whether the run
             # completes, fails, or is skipped.
@@ -378,6 +469,8 @@ def main() -> None:
                 "input_json": str(input_record.input_json),
                 "source_path": str(input_record.source_path),
                 "gt_mot": str(input_record.gt_mot),
+                "frames_dir": str(frames_dir) if frames_dir is not None else "",
+                "model_path": str(spec.model_path) if spec.model_path is not None else "",
                 "pred_mot": str(pred_mot),
                 "metrics_csv": str(metrics_csv),
                 "metrics_json": str(metrics_json),
@@ -396,6 +489,26 @@ def main() -> None:
                 )
                 continue
 
+            if spec.requires_frames and frames_dir is None:
+                results.append(
+                    {
+                        **base_record,
+                        "status": "skipped_missing_frames",
+                        "error": f"No frame directory could be inferred for {input_record.gt_mot.stem!r}.",
+                    }
+                )
+                continue
+
+            if spec.model_path is not None and not resolve_path(spec.model_path).is_file():
+                results.append(
+                    {
+                        **base_record,
+                        "status": "skipped_missing_model",
+                        "error": f"Required model file not found: {resolve_path(spec.model_path)}",
+                    }
+                )
+                continue
+
             # Reuse cached outputs when requested so repeated suite runs are fast.
             if args.skip_existing and pred_mot.exists() and metrics_json.exists():
                 metrics_record = load_summary_json(metrics_json) if metrics_json.exists() else {}
@@ -404,7 +517,7 @@ def main() -> None:
                 continue
 
             # First produce the tracker prediction file in MOT format.
-            track_result = run_command(build_tracking_command(spec, input_record.input_json, pred_mot))
+            track_result = run_command(build_tracking_command(spec, input_record.input_json, pred_mot, frames_dir))
             if track_result.returncode != 0:
                 results.append(
                     {
