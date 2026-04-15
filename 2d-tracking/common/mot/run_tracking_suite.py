@@ -285,6 +285,7 @@ def build_tracking_command(
     spec: TrackerSpec,
     detection_json: Path,
     output_mot: Path,
+    runtime_json: Path,
     frames_dir: Optional[Path],
 ) -> List[str]:
     """Build the CLI invocation for one tracker wrapper."""
@@ -298,6 +299,8 @@ def build_tracking_command(
         str(detection_json),
         "--out-mot",
         str(output_mot),
+        "--runtime-json",
+        str(runtime_json),
     ]
     if frames_dir is not None:
         command.extend(["--frames-dir", str(frames_dir)])
@@ -341,6 +344,12 @@ def load_summary_json(path: Path) -> Dict[str, object]:
     if "index" in row:
         row["sequence_label"] = row.pop("index")
     return row
+
+
+def load_runtime_json(path: Path) -> Dict[str, object]:
+    """Load one tracker runtime summary JSON row."""
+
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def parse_args() -> argparse.Namespace:
@@ -454,6 +463,7 @@ def main() -> None:
         for tracker_key in args.trackers:
             spec = TRACKER_SPECS[tracker_key]
             pred_mot = sequence_dir / f"{tracker_key}_tracks.txt"
+            runtime_json = sequence_summary_dir / f"{tracker_key}_runtime.json"
             metrics_csv = sequence_summary_dir / f"{tracker_key}_metrics.csv"
             metrics_json = sequence_summary_dir / f"{tracker_key}_metrics.json"
             frames_dir = infer_frames_dir(input_record.gt_mot.stem, frames_root)
@@ -472,6 +482,7 @@ def main() -> None:
                 "frames_dir": str(frames_dir) if frames_dir is not None else "",
                 "model_path": str(spec.model_path) if spec.model_path is not None else "",
                 "pred_mot": str(pred_mot),
+                "runtime_json": str(runtime_json),
                 "metrics_csv": str(metrics_csv),
                 "metrics_json": str(metrics_json),
                 "sequence_name": input_record.gt_mot.stem,
@@ -510,14 +521,15 @@ def main() -> None:
                 continue
 
             # Reuse cached outputs when requested so repeated suite runs are fast.
-            if args.skip_existing and pred_mot.exists() and metrics_json.exists():
+            if args.skip_existing and pred_mot.exists() and metrics_json.exists() and runtime_json.exists():
                 metrics_record = load_summary_json(metrics_json) if metrics_json.exists() else {}
-                results.append({**base_record, **metrics_record, "status": "completed_cached"})
+                runtime_record = load_runtime_json(runtime_json)
+                results.append({**base_record, **runtime_record, **metrics_record, "status": "completed_cached"})
                 print(f"Skipping existing run: {tracker_key} on {input_record.run_name}")
                 continue
 
             # First produce the tracker prediction file in MOT format.
-            track_result = run_command(build_tracking_command(spec, input_record.input_json, pred_mot, frames_dir))
+            track_result = run_command(build_tracking_command(spec, input_record.input_json, pred_mot, runtime_json, frames_dir))
             if track_result.returncode != 0:
                 results.append(
                     {
@@ -529,12 +541,26 @@ def main() -> None:
                 print(f"Tracking failed: {tracker_key} on {input_record.run_name}")
                 continue
 
+            if not runtime_json.exists():
+                results.append(
+                    {
+                        **base_record,
+                        "status": "tracking_failed",
+                        "error": f"Tracker run completed but runtime summary was not created: {runtime_json}",
+                    }
+                )
+                print(f"Tracking failed: {tracker_key} on {input_record.run_name}")
+                continue
+
+            runtime_record = load_runtime_json(runtime_json)
+
             # Then evaluate that prediction against the matching GT MOT file.
             eval_result = run_command(build_evaluation_command(spec, input_record.gt_mot, pred_mot, metrics_csv, metrics_json))
             if eval_result.returncode != 0:
                 results.append(
                     {
                         **base_record,
+                        **runtime_record,
                         "status": "evaluation_failed",
                         "error": eval_result.stderr.strip() or eval_result.stdout.strip(),
                     }
@@ -544,7 +570,7 @@ def main() -> None:
 
             # Fold the computed metrics back into the aggregate suite table.
             metrics_record = load_summary_json(metrics_json)
-            results.append({**base_record, **metrics_record, "status": "completed"})
+            results.append({**base_record, **runtime_record, **metrics_record, "status": "completed"})
             print(f"Completed: {tracker_key} on {input_record.run_name}")
 
     # Persist one aggregate summary in JSON and CSV for downstream analysis.
