@@ -377,7 +377,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--frames-root",
         type=Path,
-        default=Path(r"D:\AOC\datasets\aghri-val"),
+        default=Path(r"D:/AOC/datasets/aghri-val"),
         help="Dataset root used to infer per-sequence frame directories.",
     )
     parser.add_argument(

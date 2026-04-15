@@ -31,9 +31,9 @@ INFTY_COST = 1e5
 class TrackerConfig:
     """Normalized DeepSORT settings after YAML loading and CLI overrides."""
 
-    detections_json: Path
-    frames_dir: Path
-    model_path: Path
+    detections_json: Optional[Path]
+    frames_dir: Optional[Path]
+    model_path: Optional[Path]
     mot_output: Optional[Path] = None
     output_video: Optional[Path] = None
     save_frames_dir: Optional[Path] = None
@@ -80,20 +80,10 @@ def load_config(path: Path) -> TrackerConfig:
     with path.open("r", encoding="utf-8") as file:
         raw = yaml.safe_load(file) or {}
 
-    detections_json = raw.get("detections_json")
-    frames_dir = raw.get("frames_dir")
-    model_path = raw.get("model_path")
-    if not detections_json:
-        raise ValueError("`detections_json` is required in the tracking config.")
-    if not frames_dir:
-        raise ValueError("`frames_dir` is required in the tracking config for DeepSORT.")
-    if not model_path:
-        raise ValueError("`model_path` is required in the tracking config for DeepSORT.")
-
     return TrackerConfig(
-        detections_json=_resolve_path(detections_json),
-        frames_dir=_resolve_path(frames_dir),
-        model_path=_resolve_path(model_path),
+        detections_json=_resolve_path(raw.get("detections_json")),
+        frames_dir=_resolve_path(raw.get("frames_dir")),
+        model_path=_resolve_path(raw.get("model_path")),
         mot_output=_resolve_path(raw.get("mot_output")),
         output_video=_resolve_path(raw.get("output_video")),
         save_frames_dir=_resolve_path(raw.get("save_frames_dir")),
@@ -959,6 +949,12 @@ def _draw_tracks(frame: np.ndarray, tracks: Sequence[Track], box_thickness: int,
 def validate_config(cfg: TrackerConfig) -> None:
     """Check input/output paths before the tracking loop starts."""
 
+    if cfg.detections_json is None:
+        raise ValueError("`detections_json` must be provided in the config or via `--detections-json`.")
+    if cfg.frames_dir is None:
+        raise ValueError("`frames_dir` must be provided in the config or via `--frames-dir`.")
+    if cfg.model_path is None:
+        raise ValueError("`model_path` must be provided in the config or via `--model-path`.")
     if not cfg.detections_json.is_file():
         raise FileNotFoundError(f"Detections JSON not found: {cfg.detections_json}")
     if not cfg.frames_dir.is_dir():
