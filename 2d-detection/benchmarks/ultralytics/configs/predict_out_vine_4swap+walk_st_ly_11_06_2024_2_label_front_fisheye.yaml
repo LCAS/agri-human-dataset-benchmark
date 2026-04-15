@@ -1,0 +1,13 @@
+name: out_vine_4swap+walk_st_ly_11_06_2024_2_label_front_fisheye
+device: 0
+workers: 8
+confidence: 0.25
+target_class: 0
+image_ext: png
+
+images_dir: /workspace/data/aghri-val/out_vine_4swap+walk_st_ly_11_06_2024_2_label/sensor_data/cam_fish_front
+output_dir: /workspace/agri-human-dataset-benchmark/2d-tracking/reports/runs/detections
+
+models:
+  - name: yolo11s4
+    source: /workspace/agri-human-dataset-benchmark/2d-detection/reports/benchmarks/ultralytics/runs/agri-human-detection/yolo11s4/weights/best.pt
