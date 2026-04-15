@@ -2,17 +2,17 @@
   {
     "index": "sequence",
     "num_frames": 361,
-    "idf1": 0.014360313315926894,
-    "idp": 0.04365079365079365,
-    "idr": 0.008560311284046693,
-    "precision": 0.024291497975708502,
-    "recall": 0.004669260700389105,
-    "mota": -0.18287937743190663,
-    "motp": 0.4319957147140639,
-    "num_switches": 0,
-    "num_false_positives": 241,
-    "num_misses": 1279,
-    "mostly_tracked": 0,
-    "mostly_lost": 4
+    "idf1": 0.3889097040089921,
+    "idp": 0.37365010799136067,
+    "idr": 0.4038910505836576,
+    "precision": 0.8222543352601156,
+    "recall": 0.8856031128404669,
+    "mota": 0.6817120622568094,
+    "motp": 0.14429100123175703,
+    "num_switches": 16,
+    "num_false_positives": 246,
+    "num_misses": 147,
+    "mostly_tracked": 4,
+    "mostly_lost": 0
   }
 ]

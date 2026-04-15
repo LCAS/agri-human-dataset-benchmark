@@ -1,0 +1,18 @@
+[
+  {
+    "index": "sequence",
+    "num_frames": 262,
+    "idf1": 0.9923076923076923,
+    "idp": 1.0,
+    "idr": 0.9847328244274809,
+    "precision": 1.0,
+    "recall": 0.9847328244274809,
+    "mota": 0.9847328244274809,
+    "motp": 0.14992006324314186,
+    "num_switches": 0,
+    "num_false_positives": 0,
+    "num_misses": 4,
+    "mostly_tracked": 1,
+    "mostly_lost": 0
+  }
+]
