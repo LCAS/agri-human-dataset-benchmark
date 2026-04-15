@@ -11,3 +11,4 @@
 # Generated tracking artifacts
 2d-tracking/benchmarks/*/outputs/
 !2d-tracking/reports/runs/.gitkeep
+*.mp4
