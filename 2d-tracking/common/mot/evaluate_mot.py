@@ -10,6 +10,7 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, List, Optional
 
+import numpy as np
 import yaml
 
 TRACKING_ROOT = Path(__file__).resolve().parents[2]
@@ -88,6 +89,10 @@ def evaluate_mot(cfg: EvaluationConfig):
             "motmetrics is not installed in the active interpreter. "
             "Install the benchmark requirements before running MOT evaluation."
         ) from exc
+
+    if not hasattr(np, "asfarray"):
+        # `motmetrics==1.4.0` still calls `np.asfarray`, which NumPy 2.x removed.
+        np.asfarray = lambda array, dtype=float: np.asarray(array, dtype=dtype)
 
     # `motmetrics` reads both files into MOTChallenge tables, then performs frame
     # matching with IoU distance before computing the requested summary metrics.

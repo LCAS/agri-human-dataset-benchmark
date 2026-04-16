@@ -12,6 +12,8 @@ These utilities keep benchmark logic consistent across BoxMOT, DeepSORT, and Nor
 ## Files
 
 - `convert_gt_to_mot.py`: convert project annotations to MOT text
+- `convert_all_gt_to_mot.py`: bulk-convert every scenario under `reports/GTs`
+- `run_tracking_suite.py`: batch-run supported trackers and aggregate MOT metrics
 - `evaluate_mot.py`: evaluate one predicted MOT file against one GT file
 - `__init__.py`: package marker
 
@@ -49,6 +51,13 @@ python common/mot/convert_gt_to_mot.py \
   --out reports/runs/example/ground_truth.txt
 ```
 
+To bulk-convert all scenario annotations under `reports/GTs` into
+`reports/runs/GTs_MOT`:
+
+```bash
+python common/mot/convert_all_gt_to_mot.py --skip-existing
+```
+
 ## Evaluate A Prediction
 
 Use one of the benchmark-specific wrappers so the correct default config is supplied:
@@ -66,6 +75,29 @@ python benchmarks/boxmot/src/evaluate_mot.py \
   --gt reports/runs/example/ground_truth.txt \
   --pred reports/runs/example/tracks.txt \
   --out-csv reports/summary/example_metrics.csv
+```
+
+## Batch Tracking Suite
+
+To run the locally supported trackers on available detector exports and GT-based
+perfect-detection inputs, then save one aggregate summary for downstream
+analysis:
+
+```bash
+python common/mot/run_tracking_suite.py --skip-existing
+```
+
+By default this writes:
+
+- GT-normalized tracker inputs under `reports/runs/tracker_suite/_inputs/`
+- tracker MOT outputs under `reports/runs/tracker_suite/`
+- per-run metrics under `reports/summary/tracker_suite/`
+- aggregate CSV and JSON summaries under `reports/summary/tracker_suite/`
+
+To run only the GT-as-detections case:
+
+```bash
+python common/mot/run_tracking_suite.py --sources gt --skip-existing
 ```
 
 ## Evaluation Metrics

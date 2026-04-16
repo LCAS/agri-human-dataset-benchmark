@@ -12,6 +12,7 @@ import argparse
 import importlib
 import inspect
 import json
+import time
 import warnings
 from dataclasses import dataclass, field, replace
 from pathlib import Path
@@ -55,6 +56,7 @@ class TrackerConfig:
     detections_json: Path
     frames_dir: Optional[Path] = None
     mot_output: Optional[Path] = None
+    runtime_json: Optional[Path] = None
     output_video: Optional[Path] = None
     save_frames_dir: Optional[Path] = None
     frame_rate: float = 30.0
@@ -140,6 +142,7 @@ def load_config(path: Path) -> TrackerConfig:
         detections_json=_resolve_path(detections_json),
         frames_dir=_resolve_path(raw.get("frames_dir")),
         mot_output=_resolve_path(raw.get("mot_output")),
+        runtime_json=_resolve_path(raw.get("runtime_json")),
         output_video=_resolve_path(raw.get("output_video")),
         save_frames_dir=_resolve_path(raw.get("save_frames_dir")),
         frame_rate=float(raw.get("frame_rate", 30.0)),
@@ -258,6 +261,40 @@ class MotWriter:
 
         with self.path.open("a", encoding="utf-8") as file:
             file.writelines(lines)
+
+
+def build_runtime_summary(frame_count: int, tracking_time_seconds: float) -> Dict[str, object]:
+    """Build one runtime summary row for the current tracking run."""
+
+    tracking_time_per_frame_ms = (tracking_time_seconds * 1000.0 / frame_count) if frame_count else 0.0
+    tracking_fps = (frame_count / tracking_time_seconds) if tracking_time_seconds > 0.0 else None
+    return {
+        "tracking_frame_count": frame_count,
+        "tracking_time_seconds": tracking_time_seconds,
+        "tracking_time_per_frame_ms": tracking_time_per_frame_ms,
+        "tracking_fps": tracking_fps,
+        "tracking_timing_scope": (
+            "Per-frame tracking computation only; excludes frame disk I/O, MOT writing, "
+            "rendering, rendered output writes, and MOT evaluation."
+        ),
+        "tracking_includes_input_adaptation": True,
+        "tracking_includes_frame_io": False,
+        "tracking_includes_mot_writing": False,
+        "tracking_includes_rendering": False,
+        "tracking_includes_output_writes": False,
+        "tracking_includes_evaluation": False,
+        "tracking_includes_process_startup": False,
+    }
+
+
+def write_runtime_summary(path: Optional[Path], frame_count: int, tracking_time_seconds: float) -> Dict[str, object]:
+    """Persist one runtime summary when requested and return the summary row."""
+
+    summary = build_runtime_summary(frame_count, tracking_time_seconds)
+    if path is not None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    return summary
 
 
 def _color_for_id(track_id: int) -> Tuple[int, int, int]:
@@ -467,6 +504,7 @@ def run(cfg: TrackerConfig) -> None:
     video_writer = None
     last_shape: Optional[Tuple[int, int, int]] = None
     class_ids: Dict[str, int] = {}
+    tracking_time_seconds = 0.0
 
     if cfg.output_video is not None:
         cfg.output_video.parent.mkdir(parents=True, exist_ok=True)
@@ -474,9 +512,13 @@ def run(cfg: TrackerConfig) -> None:
         cfg.save_frames_dir.mkdir(parents=True, exist_ok=True)
 
     for frame_idx, record in enumerate(records, start=1):
+        frame_start = time.perf_counter()
         detections = detections_from_json_record(record, class_ids)
+        tracking_time_seconds += time.perf_counter() - frame_start
         frame, last_shape, file_name = _load_frame(record, cfg.frames_dir, detections, last_shape)
+        frame_start = time.perf_counter()
         tracked_objects = _normalize_tracks_output(tracker.update(detections, frame))
+        tracking_time_seconds += time.perf_counter() - frame_start
 
         if mot_writer is not None:
             mot_writer.write_frame(frame_idx, tracked_objects)
@@ -507,6 +549,8 @@ def run(cfg: TrackerConfig) -> None:
     if hasattr(tracker, "dump_cache"):
         tracker.dump_cache()
 
+    write_runtime_summary(cfg.runtime_json, len(records), tracking_time_seconds)
+
 
 def parse_args() -> argparse.Namespace:
     """Define the CLI that layers ad hoc overrides on top of the YAML config."""
@@ -532,6 +576,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--detections-json", type=Path, help="Detections JSON file to track.")
     parser.add_argument("--frames-dir", type=Path, help="Optional directory containing video frames.")
     parser.add_argument("--out-mot", type=Path, help="Output MOT file path.")
+    parser.add_argument("--runtime-json", type=Path, help="Optional JSON path for tracker runtime metrics.")
     parser.add_argument("--out-video", type=Path, help="Output MP4 path.")
     parser.add_argument("--save-frames-dir", type=Path, help="Directory for annotated output frames.")
     parser.add_argument("--frame-rate", type=float, help="Output video FPS.")
@@ -565,6 +610,8 @@ def merge_cli_overrides(cfg: TrackerConfig, args: argparse.Namespace) -> Tracker
         updates["frames_dir"] = _resolve_path(args.frames_dir)
     if args.out_mot is not None:
         updates["mot_output"] = _resolve_path(args.out_mot)
+    if args.runtime_json is not None:
+        updates["runtime_json"] = _resolve_path(args.runtime_json)
     if args.out_video is not None:
         updates["output_video"] = _resolve_path(args.out_video)
     if args.save_frames_dir is not None:

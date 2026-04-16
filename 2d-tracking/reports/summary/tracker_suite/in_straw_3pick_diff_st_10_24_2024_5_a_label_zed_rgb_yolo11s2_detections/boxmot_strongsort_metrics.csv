@@ -1,0 +1,2 @@
+,num_frames,idf1,idp,idr,precision,recall,mota,motp,num_switches,num_false_positives,num_misses,mostly_tracked,mostly_lost
+sequence,155,0.9558232931726908,0.9635627530364372,0.9482071713147411,0.9635627530364372,0.9482071713147411,0.9123505976095617,0.16602402016284246,0,9,13,2,0
