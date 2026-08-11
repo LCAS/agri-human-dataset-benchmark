@@ -5,7 +5,7 @@ confidence: 0.25
 target_class: 0
 image_ext: png
 
-images_dir: /workspace/data/aghri-val/footpath1_p1_oj+mk+gl_1walk+check_st_11_12_2024_1_label/sensor_data/cam_fish_front
+images_dir: /workspace/data/aghri-test/footpath1_p1_oj+mk+gl_1walk+check_st_11_12_2024_1_label/sensor_data/cam_fish_front
 output_dir: /workspace/agri-human-dataset-benchmark/2d-tracking/reports/runs/detections
 
 models:

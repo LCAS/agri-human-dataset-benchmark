@@ -7,7 +7,7 @@ confidence: 0.25
 target_class: 0
 image_ext: png
 
-images_dir: /workspace/data/zedrgb-yolo/images/val
+images_dir: /workspace/data/zedrgb-yolo/images/test
 output_dir: /workspace/agri-human-dataset-benchmark/2d-detection/reports/detections
 
 models:

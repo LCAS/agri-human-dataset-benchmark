@@ -51,15 +51,15 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         metainfo=metainfo,
-        ann_file='annotations/instances_val.json',
-        data_prefix=dict(img='images/val/'),
+        ann_file='annotations/instances_test.json',
+        data_prefix=dict(img='images/test/'),
         test_mode=True,
         pipeline=test_pipeline,
         backend_args=backend_args))
 
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + 'annotations/instances_val.json',
+    ann_file=data_root + 'annotations/instances_test.json',
     metric='bbox',
     format_only=False,
     backend_args=backend_args)

@@ -48,40 +48,18 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         metainfo=metainfo,
-        ann_file='annotations/instances_val.json',
-        data_prefix=dict(img='images/val/'),
+        ann_file='annotations/instances_test.json',
+        data_prefix=dict(img='images/test/'),
         test_mode=True,
         pipeline=test_pipeline,
         backend_args=backend_args))
-# test_dataloader = dict(
-#     batch_size=1,
-#     num_workers=2,
-#     persistent_workers=True,
-#     drop_last=False,
-#     sampler=dict(type='DefaultSampler', shuffle=False),
-#     dataset=dict(
-#         type=dataset_type,
-#         data_root=data_root,
-#         metainfo=metainfo,
-#         ann_file='annotations/instances_test.json',
-#         data_prefix=dict(img=''),
-#         test_mode=True,
-#         pipeline=test_pipeline,
-#         backend_args=backend_args))
+test_dataloader = val_dataloader
 
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + 'annotations/instances_val.json',
+    ann_file=data_root + 'annotations/instances_test.json',
     metric='bbox',
     format_only=False,
     backend_args=backend_args)
 
-## TODO: Since the test set is not available, we temporarily use the validation set for testing. Please replace it with the actual test set and annotation file when they are available.
-test_dataloader = val_dataloader
 test_evaluator = val_evaluator
-# test_evaluator = dict(
-#     type='CocoMetric',
-#     ann_file=data_root + 'annotations/instances_test.json',
-#     metric='bbox',
-#     format_only=False,
-#     backend_args=backend_args)
