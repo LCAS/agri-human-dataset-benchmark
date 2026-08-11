@@ -3,7 +3,7 @@ eval_dataset: /workspace/data/zedrgb-yolo/data.yaml
 imgsz: 640
 batch: 16
 device: 0
-eval_split: val
+eval_split: test
 rect: false
 half: false
 dnn: false

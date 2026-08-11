@@ -78,6 +78,13 @@ Provides a lightweight tracker benchmark with simple configuration and optional 
 - `reports/runs`: per-run tracker outputs, videos, and intermediate artifacts
 - `reports/summary`: shared MOT evaluation summaries across tracking frameworks
 
+## AGHRI Test Split Convention
+
+The selected AGHRI tracking recordings belong to the current test split. In
+the detector-based setting, their detections come from an AGHRI detector whose
+checkpoint was selected using the same test split. The tracker implementations
+and their appearance models are not trained on AGHRI.
+
 ## Path Conventions
 
 Tracking configs resolve relative paths from `2d-tracking` unless the path is already absolute. That applies to:

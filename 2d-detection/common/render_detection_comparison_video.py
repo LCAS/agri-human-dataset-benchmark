@@ -5,9 +5,9 @@ repository root so GT annotations can be referenced from 2d-tracking.
 
 Example:
     python common/render_detection_comparison_video.py ^
-      --gt-json "D:/AOC/datasets/aghri-val/out_vine_4swap+walk_st_ly_11_06_2024_2_label/annotations/cam_zed_rgb_ann.json" ^
+      --gt-json "D:/AOC/datasets/aghri-test/out_vine_4swap+walk_st_ly_11_06_2024_2_label/annotations/cam_zed_rgb_ann.json" ^
       --pred-json "D:/AOC/agri-human-dataset-benchmark/2d-tracking/reports/runs/detections/out_vine_4swap+walk_st_ly_11_06_2024_2_label_zed_rgb_yolo11s2_detections.json" ^
-      --frames-dir "D:/AOC/datasets/aghri-val/out_vine_4swap+walk_st_ly_11_06_2024_2_label/sensor_data/cam_zed_rgb" ^
+      --frames-dir "D:/AOC/datasets/aghri-test/out_vine_4swap+walk_st_ly_11_06_2024_2_label/sensor_data/cam_zed_rgb" ^
       --out-video "reports/detections/out_vine_4swap+walk_st_ly_11_06_2024_2_label_yolo11s_vs_gt.mp4" ^
       --title "out_vine_4swap+walk_st_ly_11_06_2024_2_label | detector vs GT"
 """

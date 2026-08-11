@@ -39,7 +39,7 @@ val_dataloader = dict(
     dataset=dict(
         type='AghriLidarDataset',
         data_root=_aghri_root,
-        ann_file='infos/agri_person_infos_val.pkl',
+        ann_file='infos/agri_person_infos_test.pkl',
         data_prefix=dict(pts=''),
         pipeline=_test_pipeline,
         modality=dict(use_lidar=True, use_camera=False),
@@ -59,7 +59,7 @@ test_dataloader = dict(
     dataset=dict(
         type='AghriLidarDataset',
         data_root=_aghri_root,
-        ann_file='infos/agri_person_infos_val.pkl',
+        ann_file='infos/agri_person_infos_test.pkl',
         data_prefix=dict(pts=''),
         pipeline=_test_pipeline,
         modality=dict(use_lidar=True, use_camera=False),
@@ -72,7 +72,7 @@ test_dataloader = dict(
 
 val_evaluator = dict(
     type='Aghri3DMetric',
-    ann_file=_aghri_root + '/infos/agri_person_infos_val.pkl',
+    ann_file=_aghri_root + '/infos/agri_person_infos_test.pkl',
     iou_thresholds=[0.25, 0.5, 0.75],
     score_thr=0.0,
     pred_class_id=1,
@@ -80,7 +80,7 @@ val_evaluator = dict(
 
 test_evaluator = dict(
     type='Aghri3DMetric',
-    ann_file=_aghri_root + '/infos/agri_person_infos_val.pkl',
+    ann_file=_aghri_root + '/infos/agri_person_infos_test.pkl',
     iou_thresholds=[0.25, 0.5, 0.75],
     score_thr=0.0,
     pred_class_id=1,

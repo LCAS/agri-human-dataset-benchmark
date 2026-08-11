@@ -6,7 +6,7 @@ epochs: 50
 batch: 16
 device: 0
 seed: 42
-eval_split: val
+eval_split: test
 rect: false
 half: false
 dnn: false

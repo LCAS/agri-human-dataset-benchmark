@@ -90,3 +90,8 @@ python src/prepare_aghri_lidar_dataset.py \
 - The benchmark assumes a single processed detection class: `person`.
 - Scene-level splits are generated deterministically to avoid frame leakage across train, val, and test.
 - The converter decodes the PCD `rgb` field into a normalized intensity channel for MMDetection3D.
+- For the historical AGHRI experiments, `agri_person_infos_test.pkl` is used
+  both for best-checkpoint selection and for reported evaluation. The
+  framework-required `val_dataloader` and `val_evaluator` therefore point to
+  that test file.
+- This convention applies only to AGHRI; KITTI retains its own split convention.

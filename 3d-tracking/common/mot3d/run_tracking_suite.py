@@ -16,7 +16,7 @@ Pipeline per source x scene x tracker:
   4. Evaluate predicted vs GT             -> per-scene + overall metrics JSON / CSV
   5. Append row to aggregate summary
 
-Default scenes (the three benchmark scenarios in this project):
+Default scenes (three selected AGHRI test recordings):
   - footpath1_p1_oj+mk+gl_1walk+check_st_11_12_2024_1_label
   - in_straw_3pick_diff_st_10_24_2024_5_a_label
   - out_vine_4swap+walk_st_ly_11_06_2024_2_label

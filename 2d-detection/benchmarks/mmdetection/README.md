@@ -98,6 +98,14 @@ python src/run_benchmark.py \
 - benchmark summaries: `2d-detection/reports/benchmarks/summary/mmdetection/`
 - training and evaluation work dirs: `2d-detection/reports/benchmarks/mmdetection/runs/`
 
+## AGHRI Test Split Convention
+
+For the historical AGHRI experiments, the AGHRI test split is used both for
+best-checkpoint selection and for reported evaluation. The framework-required
+`val_dataloader` and `val_evaluator` therefore point to the AGHRI test export.
+This convention applies only to AGHRI; external datasets retain their own
+validation and test conventions.
+
 ## When To Use This Module
 
 Use this module when you need more configurable detector experiments than the Ultralytics runner provides, especially for controlled Faster R-CNN style comparisons and benchmark reproducibility through explicit MMDetection configs.
