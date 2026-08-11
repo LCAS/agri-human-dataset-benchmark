@@ -107,10 +107,6 @@ The committed comparison includes:
 - AGHRI PointPillars detections
 - three representative AGHRI scenes
 
-These three scenes are selected AGHRI test recordings. Detector-based tracking
-uses the PointPillars checkpoint selected on the same AGHRI test split; the 3D
-trackers themselves are not trained on AGHRI.
-
 ## Visualisation
 
 - `tools/vis_annotations_pcd.py`: displays AGHRI 3D annotations over LiDAR point clouds

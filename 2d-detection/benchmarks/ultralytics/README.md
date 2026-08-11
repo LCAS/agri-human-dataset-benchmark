@@ -116,15 +116,6 @@ That format is consumed directly by the tracking benchmarks.
 - native Ultralytics runs: `2d-detection/reports/benchmarks/ultralytics/runs/`
 - tracking-ready detections: typically `2d-detection/reports/detections/`
 
-## AGHRI Test Split Convention
-
-For the historical AGHRI experiments, the AGHRI test data is used both for
-`best.pt` checkpoint selection and for reported evaluation. In the external
-AGHRI dataset YAML, Ultralytics' required `val` entry and the `test` entry
-therefore refer to the same AGHRI test images, while benchmark evaluation uses
-`eval_split: test`. This convention applies only to AGHRI; external datasets
-retain their own validation and test conventions.
-
 ## When To Use This Module
 
 Use this module when you want fast detector iteration, direct YOLO comparisons, or a clean path from detector checkpoints to tracking-ready detection exports.

@@ -2,7 +2,7 @@ name: aghri_3d_detection
 device: cuda:0
 confidence: 0.25
 
-# Directory containing point cloud .bin files for a selected AGHRI test recording.
+# Directory containing AGHRI point cloud .bin files.
 points_dir: /workspace/data/mmdet3d_lidar_aghri/points/footpath1_p1_oj+mk+gl_1walk+check_st_11_12_2024_1_label
 
 # Output directory — one sub-folder per model, one JSON per frame.

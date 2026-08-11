@@ -81,7 +81,6 @@ val_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        # The AGHRI test split is intentionally used for checkpoint selection.
         ann_file='infos/agri_person_infos_test.pkl',
         data_prefix=dict(pts=''),
         pipeline=test_pipeline,
@@ -122,8 +121,6 @@ val_evaluator = dict(
 
 test_evaluator = dict(
     type='Aghri3DMetric',
-    # Historical AGHRI protocol: the same test split is used for checkpoint
-    # selection and final metric reporting.
     ann_file=data_root + '/infos/agri_person_infos_test.pkl',
     iou_thresholds=[0.25, 0.5, 0.75],
     score_thr=0.0,

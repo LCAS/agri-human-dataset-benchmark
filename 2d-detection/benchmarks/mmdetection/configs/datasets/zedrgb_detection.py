@@ -48,7 +48,6 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         metainfo=metainfo,
-        # The AGHRI test split is intentionally used for checkpoint selection.
         ann_file='annotations/instances_test.json',
         data_prefix=dict(img='images/test/'),
         test_mode=True,
@@ -63,6 +62,4 @@ val_evaluator = dict(
     format_only=False,
     backend_args=backend_args)
 
-# Historical AGHRI protocol: the same test split is used for checkpoint
-# selection and final metric reporting.
 test_evaluator = val_evaluator
