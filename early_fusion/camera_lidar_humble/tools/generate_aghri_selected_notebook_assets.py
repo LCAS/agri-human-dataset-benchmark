@@ -14,8 +14,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 REPO = Path(__file__).resolve().parents[1]
-EARLY = REPO.parent
-FULL = EARLY / "results" / "aghri_fusion_paper_assets"
+EARLY = REPO
+FULL = EARLY / "results"
 OUT = FULL / "selected_notebook_assets"
 FIG = OUT / "figures"
 TAB = OUT / "tables"
@@ -109,7 +109,8 @@ def draw_panel_bars(
     error_bars: list[list[float]] | None = None,
 ) -> None:
     x0, y0, x1, y1 = box
-    d.text((x0, y0 - 44), title, fill=TEXT, font=F18)
+    title_width, _ = text_size(d, title, F18)
+    d.text(((x0 + x1 - title_width) // 2, y0 - 44), title, fill=TEXT, font=F18)
     tick_values = yticks if yticks is not None else [ymax * i / 4 for i in range(5)]
     for val in tick_values:
         y = yscale(val, y0, y1, ymax)
@@ -166,6 +167,70 @@ def legend(d: ImageDraw.ImageDraw, x: int, y: int, items: list[tuple[str, tuple[
         x += 25 + text_size(d, label, F12)[0] + 28
 
 
+def boxed_legend(
+    d: ImageDraw.ImageDraw,
+    center_x: int,
+    y: int,
+    items: list[tuple[str, tuple[int, int, int]]] | None = None,
+) -> None:
+    """Draw one compact horizontal legend in a bordered white box."""
+    if items is None:
+        items = [("Generic YOLO11s", BLUE), ("AGHRI fine-tuned", ORANGE)]
+    item_widths = [18 + 9 + text_size(d, label, F12)[0] for label, _ in items]
+    content_width = sum(item_widths) + 28 * (len(items) - 1)
+    left = center_x - content_width // 2 - 14
+    right = center_x + content_width // 2 + 14
+    d.rounded_rectangle([left, y, right, y + 34], radius=5, fill="white", outline=(190, 194, 201), width=1)
+    x = left + 14
+    for (label, color), item_width in zip(items, item_widths):
+        d.rectangle([x, y + 10, x + 18, y + 22], fill=color)
+        d.text((x + 27, y + 7), label, fill=TEXT, font=F12)
+        x += item_width + 28
+
+
+def draw_panel_hbars(
+    d: ImageDraw.ImageDraw,
+    box: tuple[int, int, int, int],
+    title: str,
+    categories: list[str],
+    series: list[tuple[str, list[float], tuple[int, int, int]]],
+    xmax: float,
+    fmt: str = "{:.2f}",
+    percent: bool = False,
+    xticks: list[float] | None = None,
+) -> None:
+    """Draw grouped horizontal bars with category names on the y-axis."""
+    x0, y0, x1, y1 = box
+    title_width, _ = text_size(d, title, F18)
+    d.text(((x0 + x1 - title_width) // 2, y0 - 50), title, fill=TEXT, font=F18)
+    ticks = xticks if xticks is not None else [xmax * i / 4 for i in range(5)]
+    for value in ticks:
+        x = int(x0 + (value / xmax) * (x1 - x0)) if xmax else x0
+        d.line([x, y0, x, y1], fill=GRID)
+        label = f"{value * 100:.0f}%" if percent else fmt.format(value)
+        tw, _ = text_size(d, label, F10)
+        d.text((x - tw // 2, y1 + 8), label, fill=MUTED, font=F10)
+    d.line([x0, y0, x0, y1], fill=TEXT, width=2)
+    d.line([x0, y1, x1, y1], fill=TEXT, width=2)
+
+    group_height = (y1 - y0) / len(categories)
+    bar_height = min(24, max(12, int(group_height / (len(series) + 0.8))))
+    gap = 5
+    for category_index, category in enumerate(categories):
+        center_y = int(y0 + group_height * (category_index + 0.5))
+        category_width, _ = text_size(d, category, F11)
+        d.text((x0 - category_width - 12, center_y - 7), category, fill=MUTED, font=F11)
+        total_height = len(series) * bar_height + (len(series) - 1) * gap
+        start_y = center_y - total_height // 2
+        for series_index, (_, values, color) in enumerate(series):
+            value = values[category_index]
+            top = start_y + series_index * (bar_height + gap)
+            end_x = int(x0 + (value / xmax) * (x1 - x0)) if xmax else x0
+            d.rectangle([x0, top, end_x, top + bar_height], fill=color)
+            value_label = f"{value * 100:.1f}%" if percent else fmt.format(value)
+            d.text((end_x + 6, top + 3), value_label, fill=TEXT, font=F10)
+
+
 def draw_vertical_text(
     img: Image.Image,
     text: str,
@@ -189,17 +254,18 @@ def generate_combined_overall() -> None:
     f = by["AGHRI fine-tuned"]
     img = Image.new("RGB", (1600, 500), "white")
     d = ImageDraw.Draw(img)
-    legend(d, 42, 42)
+    boxed_legend(d, 800, 22)
     draw_panel_bars(
         d,
         (85, 125, 500, 435),
-        "Localization error",
+        "(a) Localization error",
         ["mean", "median", "P95"],
         [
             ("Generic YOLO11s", [float(g["mean_m"]), float(g["median_m"]), float(g["p95_m"])], BLUE),
             ("AGHRI fine-tuned", [float(f["mean_m"]), float(f["median_m"]), float(f["p95_m"])], ORANGE),
         ],
         2.0,
+        fmt="{:.2f}",
         yticks=[0.0, 0.5, 1.0, 1.5, 2.0],
         tick_fmt="{:.1f}",
         group_spacing=1.05,
@@ -207,7 +273,7 @@ def generate_combined_overall() -> None:
     draw_panel_bars(
         d,
         (615, 125, 1030, 435),
-        "Reliability",
+        "(b) Reliability",
         ["valid rate", "error >1m"],
         [
             ("Generic YOLO11s", [float(g["valid_rate"]), float(g["err_gt_1m"])], BLUE),
@@ -220,7 +286,7 @@ def generate_combined_overall() -> None:
     draw_panel_bars(
         d,
         (1155, 125, 1510, 435),
-        "FPS",
+        "(c) FPS",
         ["fps"],
         [
             ("Generic YOLO11s", [float(g["fps"])], BLUE),
@@ -230,9 +296,9 @@ def generate_combined_overall() -> None:
         fmt="{:.2f}",
         yticks=[0, 5, 10, 15, 20],
     )
-    d.text((190, 470), "3D error (m)", fill=MUTED, font=F12)
-    d.text((780, 470), "rate", fill=MUTED, font=F12)
-    d.text((1285, 470), "frames/s", fill=MUTED, font=F12)
+    draw_vertical_text(img, "3D error (m)", (15, 220), F12, MUTED)
+    draw_vertical_text(img, "rate", (545, 265), F12, MUTED)
+    draw_vertical_text(img, "frames/s", (1085, 245), F12, MUTED)
     path = FIG / "F1_F2_F3_overall_summary_row.png"
     path.parent.mkdir(parents=True, exist_ok=True)
     img.save(path)
@@ -245,7 +311,27 @@ def generate_scenario_f9() -> None:
         ("Polytunnel", "in_straw_3pick_diff_st_10_24_2024_5_a_label"),
         ("Vineyard", "out_vine_4swap+walk_st_ly_11_06_2024_2_label"),
     ]
-    rows = read_csv(FROZEN / "per_recording_results.csv")
+    source = FROZEN / "per_recording_results.csv"
+    if source.exists():
+        rows = read_csv(source)
+    else:
+        frozen_rows = read_csv(OUT / "derived_data" / "F9_selected_representative_scenarios.csv")
+        rows = []
+        for row in frozen_rows:
+            rows.extend(
+                [
+                    {
+                        "model": "Generic YOLO11s",
+                        "recording": row["selected_bag"],
+                        "mean_3d_error_m": row["generic_mean_3d_error_m"],
+                    },
+                    {
+                        "model": "AGHRI-fine-tuned YOLO11s",
+                        "recording": row["selected_bag"],
+                        "mean_3d_error_m": row["finetuned_mean_3d_error_m"],
+                    },
+                ]
+            )
     values = {("Generic YOLO11s", rec): None for _, rec in selected}
     values.update({("AGHRI-fine-tuned YOLO11s", rec): None for _, rec in selected})
     for row in rows:
@@ -254,24 +340,23 @@ def generate_scenario_f9() -> None:
             values[key] = float(row["mean_3d_error_m"])
     img = Image.new("RGB", (720, 490), "white")
     d = ImageDraw.Draw(img)
-    legend(d, 48, 32)
+    boxed_legend(d, 360, 24)
     draw_panel_bars(
         d,
         (165, 115, 585, 410),
-        "",
+        "Mean 3D localization error",
         [s for s, _ in selected],
         [
             ("Generic YOLO11s", [values[("Generic YOLO11s", rec)] or 0 for _, rec in selected], BLUE),
             ("AGHRI fine-tuned", [values[("AGHRI-fine-tuned YOLO11s", rec)] or 0 for _, rec in selected], ORANGE),
         ],
         0.5,
+        fmt="{:.2f}",
         yticks=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
         tick_fmt="{:.1f}",
         group_spacing=0.95,
     )
-    axis = "mean 3D localization error (m)"
-    tw, _ = text_size(d, axis, F13)
-    d.text(((720 - tw) // 2, 455), axis, fill=MUTED, font=F13)
+    draw_vertical_text(img, "mean 3D localization error (m)", (48, 170), F13, MUTED)
     out_rows = [
         {"scenario": scenario, "selected_bag": rec, "generic_mean_3d_error_m": values[("Generic YOLO11s", rec)], "finetuned_mean_3d_error_m": values[("AGHRI-fine-tuned YOLO11s", rec)]}
         for scenario, rec in selected
@@ -454,34 +539,29 @@ def generate_f14_depth_normalized_error() -> None:
     order = ["near_lt_2m", "medium_2_5m", "far_ge_5m"]
     labels = ["near <2m", "medium 2-5m", "far >=5m"]
     display = {"generic": "Generic YOLO11s", "finetuned": "AGHRI fine-tuned YOLO11s"}
-    values: dict[tuple[str, str], list[float]] = {
-        (detector, band): [] for detector in sources for band in order
-    }
-    for detector, path in sources.items():
-        for row in json.loads(path.read_text(encoding="utf-8")):
-            band = row.get("distance_band")
-            if band not in order:
-                continue
-            if not row.get("valid") or row.get("status") != "matched":
-                continue
-            error = row.get("errors", {}).get("lidar_center_error")
-            depth = (row.get("published_xyz") or [None, None, None])[2]
-            if error is None or depth is None:
-                continue
-            error = float(error)
-            depth = float(depth)
-            if not (math.isfinite(error) and math.isfinite(depth) and depth > 0.0):
-                continue
-            values[(detector, band)].append(100.0 * error / depth)
-
-    means = {
-        key: (sum(vals) / len(vals) if vals else 0.0)
-        for key, vals in values.items()
-    }
-    counts = {
-        key: len(vals)
-        for key, vals in values.items()
-    }
+    values: dict[tuple[str, str], list[float]] = {(detector, band): [] for detector in sources for band in order}
+    if all(path.exists() for path in sources.values()):
+        for detector, path in sources.items():
+            for row in json.loads(path.read_text(encoding="utf-8")):
+                band = row.get("distance_band")
+                if band not in order or not row.get("valid") or row.get("status") != "matched":
+                    continue
+                error = row.get("errors", {}).get("lidar_center_error")
+                depth = (row.get("published_xyz") or [None, None, None])[2]
+                if error is None or depth is None:
+                    continue
+                error, depth = float(error), float(depth)
+                if math.isfinite(error) and math.isfinite(depth) and depth > 0.0:
+                    values[(detector, band)].append(100.0 * error / depth)
+        means = {key: (sum(vals) / len(vals) if vals else 0.0) for key, vals in values.items()}
+        counts = {key: len(vals) for key, vals in values.items()}
+    else:
+        means, counts = {}, {}
+        detector_key = {"Generic YOLO11s": "generic", "AGHRI fine-tuned YOLO11s": "finetuned"}
+        for row in read_csv(OUT / "derived_data" / "F14_depth_bins_depth_normalized_error.csv"):
+            key = (detector_key[row["detector"]], row["depth_band"])
+            means[key] = float(row["mean_relative_3d_error_percent_of_depth"])
+            counts[key] = int(row["valid_matched_count"])
     reductions = []
     for band in order:
         generic = means[("generic", band)]
@@ -495,7 +575,7 @@ def generate_f14_depth_normalized_error() -> None:
                 "detector": display[detector],
                 "depth_band": band,
                 "mean_relative_3d_error_percent_of_depth": f"{means[(detector, band)]:.6f}",
-                "valid_matched_count": len(values[(detector, band)]),
+                "valid_matched_count": counts[(detector, band)],
                 "visual_encoding": "point_size_scales_with_valid_matched_count",
                 "normalization": "100 * lidar_center_error / fused_camera_depth_z",
             }
@@ -506,7 +586,7 @@ def generate_f14_depth_normalized_error() -> None:
 
     img = Image.new("RGB", (850, 555), "white")
     d = ImageDraw.Draw(img)
-    legend(d, 48, 32, [("Generic YOLO11s", BLUE), ("AGHRI fine-tuned YOLO11s", ORANGE)])
+    boxed_legend(d, 425, 24, [("Generic YOLO11s", BLUE), ("AGHRI fine-tuned YOLO11s", ORANGE)])
     plot_box = (185, 100, 650, 420)
     x0, y0, x1, y1 = plot_box
     ymax = 0.30

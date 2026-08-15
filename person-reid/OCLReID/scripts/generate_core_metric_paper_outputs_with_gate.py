@@ -417,6 +417,12 @@ def create_figures(df: pd.DataFrame, table: pd.DataFrame) -> dict[str, pd.DataFr
     outputs["fig1"] = fig1_data
     fig, ax = plt.subplots(figsize=(9.8, 5.0))
     grouped_bars(ax, fig1_data, [m[1] for m in CORE_METRICS], "metric", "value", "")
+    ax.set_xticklabels(
+        [f"({chr(ord('a') + index)}) {metric[1]}" for index, metric in enumerate(CORE_METRICS)],
+        rotation=14,
+        ha="right",
+        fontsize=9.5,
+    )
     ax.set_ylabel("Metric value")
     handles, labels = ax.get_legend_handles_labels()
     fig.legend(handles, labels, frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 0.985))
@@ -429,8 +435,15 @@ def create_figures(df: pd.DataFrame, table: pd.DataFrame) -> dict[str, pd.DataFr
     scenario_data.to_csv(TABLE_DIR / "fig2_selected_scenario_core_metrics_data.csv", index=False)
     outputs["fig2"] = scenario_data
     fig, axes = plt.subplots(1, 3, figsize=(14.8, 4.6), sharey=True)
-    for ax, (col, label) in zip(axes, CORE_METRICS):
-        grouped_bars(ax, scenario_data, SCENARIO_ORDER, "scenario", col, label)
+    for panel_index, (ax, (col, label)) in enumerate(zip(axes, CORE_METRICS)):
+        grouped_bars(
+            ax,
+            scenario_data,
+            SCENARIO_ORDER,
+            "scenario",
+            col,
+            f"({chr(ord('a') + panel_index)}) {label}",
+        )
     axes[0].set_ylabel("Metric value")
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, frameon=False, ncol=3, loc="upper center")

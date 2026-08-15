@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 from matplotlib import patches
 
 
-REPO = Path("/home/prabuddhi/Desktop/late_fusion/deepfusionmot")
+REPO = Path(__file__).resolve().parents[1]
 OUT = REPO / "results/late_fusion_paper_assets"
 ASSETS = OUT / "selected_notebook_assets"
 FIGURES = ASSETS / "figures"
@@ -726,8 +726,8 @@ def plot_detector_adaptation_interaction(metrics: pd.DataFrame) -> Path:
     by_id = metrics.set_index("combination_id")
     fig, axes = plt.subplots(1, 2, figsize=(12.8, 5.4), sharey=True)
     panels = [
-        ("A. SECOND", ["S1", "S3"], ["S2", "S4"], ["Generic SECOND", "Fine-tuned SECOND"]),
-        ("B. PointPillars", ["P1", "P3"], ["P2", "P4"], ["Generic PointPillars", "Fine-tuned PointPillars"]),
+        ("(a) SECOND", ["S1", "S3"], ["S2", "S4"], ["Generic SECOND", "Fine-tuned SECOND"]),
+        ("(b) PointPillars", ["P1", "P3"], ["P2", "P4"], ["Generic PointPillars", "Fine-tuned PointPillars"]),
     ]
     ymax = max(0.42, float(metrics["HOTA"].max()) * 1.18)
     for ax, (title, generic_yolo_ids, ft_yolo_ids, xlabels) in zip(axes, panels):
@@ -1244,7 +1244,7 @@ def create_notebook(metrics: pd.DataFrame, speed: pd.DataFrame, manifest_rows: l
         nbf.v4.new_markdown_cell(
             "## Figure 4: Effect Of Detector Adaptation On HOTA\n\n"
             f"![Detector adaptation HOTA interaction]({rel_base}/figures/F4_detector_adaptation_hota_interaction.png)\n\n"
-            "This two-panel interaction plot isolates the effect of detector adaptation. Fine-tuning the LiDAR detector produces the dominant HOTA improvement, while changing only the camera checkpoint gives a smaller change. The strongest HOTA is obtained by the fine-tuned PointPillars setting."
+            "**Effect of camera and LiDAR detector fine-tuning on HOTA for (a) SECOND and (b) PointPillars.** Each panel compares generic and AGHRI fine-tuned YOLO11s with the corresponding generic and AGHRI fine-tuned LiDAR detector configurations. Fine-tuning the LiDAR detector produces the dominant HOTA improvement, while changing only the camera checkpoint gives a smaller change. The strongest HOTA is obtained by the fine-tuned PointPillars setting."
         ),
         nbf.v4.new_markdown_cell(
             "## Figure 5: Per-Recording Robustness Of The Two Fully Fine-Tuned Systems\n\n"
