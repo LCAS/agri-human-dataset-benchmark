@@ -1,0 +1,7 @@
+detector,depth_band,mean_relative_3d_error_percent_of_depth,valid_matched_count,total_valid_matched_count,band_weight,weighted_contribution_percent_points,calculation
+Generic YOLO11s,near_lt_2m,25.074743,295,2561,0.115189,2.888344,mean_relative_3d_error_percent_of_depth * valid_matched_count / total_valid_matched_count
+Generic YOLO11s,medium_2_5m,10.316265,1806,2561,0.705193,7.274961,mean_relative_3d_error_percent_of_depth * valid_matched_count / total_valid_matched_count
+Generic YOLO11s,far_ge_5m,14.783652,460,2561,0.179617,2.655400,mean_relative_3d_error_percent_of_depth * valid_matched_count / total_valid_matched_count
+AGHRI fine-tuned YOLO11s,near_lt_2m,22.951113,274,2433,0.112618,2.584712,mean_relative_3d_error_percent_of_depth * valid_matched_count / total_valid_matched_count
+AGHRI fine-tuned YOLO11s,medium_2_5m,9.944234,1753,2433,0.720510,7.164917,mean_relative_3d_error_percent_of_depth * valid_matched_count / total_valid_matched_count
+AGHRI fine-tuned YOLO11s,far_ge_5m,10.225331,406,2433,0.166872,1.706323,mean_relative_3d_error_percent_of_depth * valid_matched_count / total_valid_matched_count
